@@ -1,625 +1,478 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>jupitos × H&Z — PMI Integration Roadmap</title>
 <style>
-  :root {
-    --navy: #0F1F3D;
-    --navy-mid: #1A2F52;
-    --blue: #2563EB;
-    --blue-light: #EFF6FF;
-    --amber: #D97706;
-    --amber-light: #FFFBEB;
-    --green: #16A34A;
-    --green-light: #F0FDF4;
-    --red: #DC2626;
-    --red-light: #FEF2F2;
-    --purple: #7C3AED;
-    --purple-light: #F5F3FF;
-    --slate: #64748B;
-    --slate-light: #F8FAFC;
-    --border: #E2E8F0;
-    --text: #0F172A;
-    --text-muted: #64748B;
-    --white: #FFFFFF;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: #F1F5F9;
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-
-  /* ── Top bar ── */
-  .topbar {
-    background: var(--navy);
-    color: white;
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 4px rgba(0,0,0,.2);
-  }
-  .topbar-brand { display: flex; align-items: center; gap: 10px; }
-  .topbar-brand .logo {
-    background: var(--blue);
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  .topbar-brand .brand-name { font-size: 14px; font-weight: 600; color: white; }
-  .topbar-brand .brand-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-left: 6px; }
-  .topbar-right { display: flex; align-items: center; gap: 12px; }
-  .topbar-date { font-size: 12px; color: rgba(255,255,255,.5); }
-  .badge-live {
-    background: var(--green);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: .05em;
-  }
-
-  /* ── Layout ── */
-  .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
-  .page-body { padding: 1.5rem 0 3rem; }
-
-  /* ── KPI row ── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-  .kpi-card {
-    background: white;
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .kpi-card.total::before { background: var(--navy); }
-  .kpi-card.w1::before { background: var(--blue); }
-  .kpi-card.w2::before { background: var(--green); }
-  .kpi-card.w3::before { background: var(--amber); }
-  .kpi-card.dec::before { background: var(--purple); }
-  .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 6px; }
-  .kpi-value { font-size: 32px; font-weight: 700; line-height: 1; color: var(--text); }
-  .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-  .kpi-progress { margin-top: 10px; }
-  .kpi-bar { height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; }
-  .kpi-bar-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
-
-  /* ── Section header ── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
-
-  /* ── Filters ── */
-  .filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .filter-btn {
-    font-size: 12px;
-    font-weight: 500;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: white;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all .15s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
-  .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
-  .filter-btn .count {
-    background: rgba(255,255,255,.2);
-    padding: 0 5px;
-    border-radius: 10px;
-    font-size: 10px;
-  }
-  .filter-btn:not(.active) .count { background: #F1F5F9; color: var(--text-muted); }
-
-  /* ── Roadmap grid ── */
-  .roadmap-wrap {
-    background: white;
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .roadmap-header {
-    display: grid;
-    grid-template-columns: 180px repeat(3, 1fr);
-    border-bottom: 1px solid var(--border);
-  }
-  .rh-cell {
-    padding: 10px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    border-right: 0.5px solid var(--border);
-  }
-  .rh-cell:last-child { border-right: none; }
-  .rh-cell.rh-label { background: #F8FAFC; color: var(--text-muted); font-size: 11px; }
-  .rh-cell.rh-w1 { background: #EFF6FF; color: #1D4ED8; }
-  .rh-cell.rh-w2 { background: #F0FDF4; color: #15803D; }
-  .rh-cell.rh-w3 { background: #FFFBEB; color: #B45309; }
-  .rh-sub { font-size: 10px; font-weight: 400; opacity: .7; display: block; margin-top: 1px; }
-
-  .cluster-row {
-    display: grid;
-    grid-template-columns: 180px repeat(3, 1fr);
-    border-bottom: 0.5px solid var(--border);
-    transition: background .1s;
-  }
-  .cluster-row:last-child { border-bottom: none; }
-  .cluster-label {
-    padding: 12px 14px;
-    border-right: 0.5px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    background: #FAFBFC;
-  }
-  .cluster-icon { font-size: 16px; line-height: 1; margin-top: 1px; flex-shrink: 0; }
-  .cluster-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
-  .wave-col {
-    padding: 8px;
-    border-right: 0.5px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    min-height: 60px;
-  }
-  .wave-col:last-child { border-right: none; }
-
-  /* ── Cards ── */
-  .item-card {
-    border-radius: var(--radius-sm);
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: transform .12s, box-shadow .12s;
-    border: 1px solid transparent;
-    text-decoration: none;
-    display: block;
-  }
-  .item-card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-  .item-card.s-done { background: #F0FDF4; border-color: #BBF7D0; }
-  .item-card.s-prog { background: #FFFBEB; border-color: #FDE68A; }
-  .item-card.s-open { background: #FEF2F2; border-color: #FECACA; }
-  .item-card.s-dec  { background: #F5F3FF; border-color: #DDD6FE; }
-
-  .card-top { display: flex; align-items: flex-start; gap: 5px; margin-bottom: 3px; }
-  .card-status-dot { font-size: 10px; margin-top: 1px; flex-shrink: 0; }
-  .card-title { font-size: 11.5px; font-weight: 600; line-height: 1.35; color: var(--text); }
-  .s-done .card-title { color: #14532D; }
-  .s-prog .card-title { color: #713F12; }
-  .s-open .card-title { color: #7F1D1D; }
-  .s-dec  .card-title { color: #4C1D95; }
-
-  .card-meta { font-size: 10.5px; color: var(--text-muted); margin-bottom: 4px; }
-  .s-done .card-meta { color: #166534; }
-  .s-prog .card-meta { color: #92400E; }
-  .s-open .card-meta { color: #991B1B; }
-  .s-dec  .card-meta { color: #5B21B6; }
-
-  .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
-  .tag {
-    font-size: 9.5px;
-    font-weight: 600;
-    padding: 1px 6px;
-    border-radius: 10px;
-    letter-spacing: .03em;
-  }
-  .tag-high { background: #FEE2E2; color: #7F1D1D; }
-  .tag-med  { background: #FEF3C7; color: #713F12; }
-  .tag-low  { background: #F1F5F9; color: #475569; }
-  .tag-dec  { background: #EDE9FE; color: #4C1D95; }
-
-  .progress-mini { height: 3px; background: rgba(0,0,0,.1); border-radius: 2px; overflow: hidden; margin-top: 5px; }
-  .progress-mini-fill { height: 100%; border-radius: 2px; }
-  .s-done .progress-mini-fill { background: #16A34A; }
-  .s-prog .progress-mini-fill { background: #D97706; }
-
-  .empty-cell { font-size: 11px; color: #CBD5E1; padding: 6px 2px; }
-
-  /* ── Legend ── */
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    padding: .75rem 1rem;
-    border-top: 0.5px solid var(--border);
-    background: #FAFBFC;
-  }
-  .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
-  .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-
-  /* ── Decision log strip ── */
-  .decisions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 10px;
-    margin-top: 1rem;
-  }
-  .dec-card {
-    background: white;
-    border: 1px solid #DDD6FE;
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    border-left: 3px solid var(--purple);
-  }
-  .dec-ref { font-size: 10px; font-weight: 700; color: var(--purple); letter-spacing: .06em; margin-bottom: 4px; }
-  .dec-title { font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.35; }
-  .dec-meta { font-size: 11px; color: var(--text-muted); }
-  .dec-status {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: #FEE2E2;
-    color: #7F1D1D;
-  }
-  .dec-status.in-review { background: #FEF3C7; color: #713F12; }
-
-  /* ── Footer ── */
-  .footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 11px;
-    color: var(--text-muted);
-    border-top: 0.5px solid var(--border);
-    margin-top: 2rem;
-  }
-
-  /* ── Utility ── */
-  .hidden { display: none !important; }
-  .section-gap { margin-bottom: 1.5rem; }
-
-  @media (max-width: 900px) {
-    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-    .roadmap-header, .cluster-row { grid-template-columns: 140px repeat(3, 1fr); }
-    .cluster-label { padding: 10px; }
-  }
-  @media (max-width: 640px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .topbar { padding: 0 1rem; }
-    .container { padding: 0 1rem; }
-    .roadmap-header, .cluster-row { grid-template-columns: 110px repeat(3, 1fr); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
-  }
+:root{--navy:#0F1F3D;--navy2:#1A2F52;--blue:#2563EB;--blue-l:#EFF6FF;--green:#16A34A;--green-l:#F0FDF4;--amber:#D97706;--amber-l:#FFFBEB;--red:#DC2626;--red-l:#FEF2F2;--purple:#7C3AED;--purple-l:#F5F3FF;--slate:#64748B;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--bg:#F1F5F9;--white:#FFFFFF;--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.topbar{background:var(--navy);color:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.25)}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-logo{background:var(--blue);font-size:11px;font-weight:700;letter-spacing:.07em;padding:3px 8px;border-radius:4px}
+.tb-name{font-size:14px;font-weight:600}
+.tb-sub{font-size:12px;color:rgba(255,255,255,.45);margin-left:4px}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-date{font-size:12px;color:rgba(255,255,255,.45)}
+.badge{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+.btn-save{background:var(--blue);color:#fff;border:none;font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.btn-save:hover{background:#1D4ED8}
+.btn-save:disabled{opacity:.45;cursor:not-allowed}
+.save-st{font-size:11px;color:rgba(255,255,255,.55)}
+.wrap{max-width:1300px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.25rem}
+.kpi{background:#fff;border:0.5px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.total::before{background:var(--navy)}.kpi.w1::before{background:var(--blue)}.kpi.w2::before{background:var(--green)}.kpi.w3::before{background:var(--amber)}.kpi.dec::before{background:var(--purple)}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px}
+.kpi-val{font-size:28px;font-weight:700;line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.kpi-bar{height:3px;background:#E2E8F0;border-radius:2px;overflow:hidden;margin-top:8px}
+.kpi-fill{height:100%;border-radius:2px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:15px;font-weight:600}
+.btn-add{background:var(--navy);color:#fff;border:none;font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:background .15s}
+.btn-add:hover{background:var(--navy2)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fpill{font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.fpill:hover{border-color:var(--blue);color:var(--blue)}
+.fpill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.fcnt{font-size:10px;padding:0 5px;border-radius:10px;background:rgba(255,255,255,.2)}
+.fpill:not(.on) .fcnt{background:#F1F5F9;color:var(--muted)}
+.rm-wrap{background:#fff;border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.25rem}
+.rm-hd{display:grid;grid-template-columns:176px repeat(3,1fr);border-bottom:1px solid var(--border)}
+.rm-hd-cell{padding:9px 12px;font-size:11px;font-weight:700;letter-spacing:.04em;border-right:0.5px solid var(--border)}
+.rm-hd-cell:last-child{border-right:none}
+.rm-hd-lbl{background:#F8FAFC;color:var(--muted);font-size:10px}
+.rm-hd-w1{background:#EFF6FF;color:#1D4ED8}.rm-hd-w2{background:#F0FDF4;color:#15803D}.rm-hd-w3{background:#FFFBEB;color:#B45309}
+.rh-sub{font-size:9px;font-weight:400;opacity:.7;display:block;margin-top:1px}
+.cl-row{display:grid;grid-template-columns:176px repeat(3,1fr);border-bottom:0.5px solid var(--border)}
+.cl-row:last-child{border-bottom:none}
+.cl-lbl{padding:10px 12px;border-right:0.5px solid var(--border);background:#FAFBFC;display:flex;align-items:flex-start;gap:7px}
+.cl-icon{font-size:15px;line-height:1;margin-top:1px;flex-shrink:0}
+.cl-name{font-size:11.5px;font-weight:600;line-height:1.3}
+.w-col{padding:7px;border-right:0.5px solid var(--border);display:flex;flex-direction:column;gap:5px;min-height:56px}
+.w-col:last-child{border-right:none}
+.card{border-radius:var(--rs);padding:7px 9px;border:1px solid transparent;cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+.card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.09)}
+.card.s-done{background:#F0FDF4;border-color:#BBF7D0}.card.s-prog{background:#FFFBEB;border-color:#FDE68A}.card.s-open{background:#FEF2F2;border-color:#FECACA}.card.s-dec{background:#F5F3FF;border-color:#DDD6FE}
+.card-top{display:flex;align-items:flex-start;gap:4px;margin-bottom:2px}
+.card-dot{font-size:9px;margin-top:2px;flex-shrink:0}
+.card-title{font-size:11px;font-weight:600;line-height:1.35}
+.s-done .card-title{color:#14532D}.s-prog .card-title{color:#713F12}.s-open .card-title{color:#7F1D1D}.s-dec .card-title{color:#4C1D95}
+.card-meta{font-size:10px;margin-bottom:3px;opacity:.75}
+.s-done .card-meta{color:#166534}.s-prog .card-meta{color:#92400E}.s-open .card-meta{color:#991B1B}.s-dec .card-meta{color:#5B21B6}
+.card-tags{display:flex;gap:3px;flex-wrap:wrap}
+.tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px}
+.tag-H{background:#FEE2E2;color:#7F1D1D}.tag-M{background:#FEF3C7;color:#713F12}.tag-L{background:#F1F5F9;color:#475569}.tag-D{background:#EDE9FE;color:#4C1D95}
+.prog-bar{height:3px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;border-radius:2px}
+.s-done .prog-fill{background:#16A34A}.s-prog .prog-fill{background:#D97706}
+.card-edit-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.07);border:none;border-radius:4px;cursor:pointer;font-size:10px;padding:1px 5px;opacity:0;transition:opacity .15s;color:var(--text)}
+.card:hover .card-edit-btn{opacity:1}
+.empty-col{font-size:11px;color:#CBD5E1;padding:4px 2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:.65rem 1rem;border-top:0.5px solid var(--border);background:#FAFBFC}
+.leg{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:9px}
+.dec-card{background:#fff;border:1px solid #DDD6FE;border-left:3px solid var(--purple);border-radius:var(--r);padding:11px 13px}
+.dec-ref{font-size:10px;font-weight:700;color:var(--purple);letter-spacing:.05em;margin-bottom:3px}
+.dec-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.35}
+.dec-meta{font-size:10.5px;color:var(--muted)}
+.dec-badge{display:inline-block;margin-top:5px;font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:10px}
+.dec-badge.open{background:#FEE2E2;color:#7F1D1D}.dec-badge.review{background:#FEF3C7;color:#713F12}.dec-badge.decided{background:#F0FDF4;color:#14532D}
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem}
+.overlay.hidden{display:none}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;animation:pop .15s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-hd{background:var(--navy);color:#fff;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.modal-hd h3{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer}
+.modal-body{padding:1.25rem;display:flex;flex-direction:column;gap:12px}
+.field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);background:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-ft{padding:.9rem 1.25rem;border-top:0.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.btn{font-size:12px;font-weight:600;padding:6px 16px;border-radius:6px;border:none;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#1D4ED8}
+.btn-danger{background:#FEE2E2;color:var(--red)}.btn-danger:hover{background:var(--red);color:#fff}
+.btn-ghost{background:var(--bg);color:var(--muted)}.btn-ghost:hover{background:var(--border)}
+.pct-row{display:flex;align-items:center;gap:8px}
+.pct-row input[type=range]{flex:1;accent-color:var(--blue)}
+.pct-row span{font-size:12px;font-weight:600;color:var(--blue);min-width:32px;text-align:right}
+/* Token modal */
+.token-modal{background:#fff;border-radius:12px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:1.5rem;animation:pop .15s ease}
+.token-modal h3{font-size:15px;font-weight:600;margin-bottom:.5rem}
+.token-modal p{font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.5}
+.token-modal input{width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;font-family:monospace;margin-bottom:1rem}
+.token-modal input:focus{outline:none;border-color:var(--blue)}
+.token-modal .note{font-size:11px;color:var(--muted);margin-top:.75rem;line-height:1.5}
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;transform:translateY(10px);opacity:0;transition:all .25s}
+.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.rm-hd,.cl-row{grid-template-columns:130px repeat(3,1fr)}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.rm-hd,.cl-row{grid-template-columns:100px repeat(3,1fr)}.wrap{padding:.75rem .75rem 3rem}}
 </style>
 </head>
 <body>
-
-<!-- Top bar -->
 <nav class="topbar">
-  <div class="topbar-brand">
-    <span class="logo">PMI</span>
-    <span class="brand-name">jupitos × H&amp;Z</span>
-    <span class="brand-sub">Post Merger Integration</span>
+  <div class="tb-left">
+    <span class="tb-logo">PMI</span>
+    <span class="tb-name">jupitos × H&amp;Z</span>
+    <span class="tb-sub">Post Merger Integration</span>
   </div>
-  <div class="topbar-right">
-    <span class="topbar-date" id="live-date"></span>
-    <span class="badge-live">LIVE</span>
+  <div class="tb-right">
+    <span class="save-st" id="save-st"></span>
+    <button class="btn-save" id="btn-save" onclick="initSave()" disabled>↑ Save to GitHub</button>
+    <span class="tb-date" id="live-date"></span>
+    <span class="badge">LIVE</span>
   </div>
 </nav>
 
-<div class="container page-body">
-
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi-card total">
-      <div class="kpi-label">Gesamt</div>
-      <div class="kpi-value">58</div>
-      <div class="kpi-sub">Deliverables</div>
-      <div class="kpi-progress">
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:16%;background:var(--navy)"></div></div>
-      </div>
-    </div>
-    <div class="kpi-card w1">
-      <div class="kpi-label">Welle 1</div>
-      <div class="kpi-value">23</div>
-      <div class="kpi-sub">9 abgeschlossen · 39%</div>
-      <div class="kpi-progress">
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:39%;background:var(--blue)"></div></div>
-      </div>
-    </div>
-    <div class="kpi-card w2">
-      <div class="kpi-label">Welle 2</div>
-      <div class="kpi-value">14</div>
-      <div class="kpi-sub">0 abgeschlossen · laufend</div>
-      <div class="kpi-progress">
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:5%;background:var(--green)"></div></div>
-      </div>
-    </div>
-    <div class="kpi-card w3">
-      <div class="kpi-label">Welle 3</div>
-      <div class="kpi-value">21</div>
-      <div class="kpi-sub">Design & Planung ab Q4</div>
-      <div class="kpi-progress">
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:2%;background:var(--amber)"></div></div>
-      </div>
-    </div>
-    <div class="kpi-card dec">
-      <div class="kpi-label">Entscheidungen</div>
-      <div class="kpi-value">25</div>
-      <div class="kpi-sub">offen · Handlung nötig</div>
-      <div class="kpi-progress">
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%;background:var(--purple)"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Roadmap -->
-  <div class="section-gap">
-    <div class="section-header">
-      <div class="section-title">Integrationsfahrplan nach Welle &amp; Cluster</div>
+<div class="wrap">
+  <div class="kpi-grid" id="kpi-grid"></div>
+  <div class="sec-hd">
+    <span class="sec-title">Integration Roadmap by Wave &amp; Cluster</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <div class="filters" id="filters">
-        <span class="filter-btn active" data-filter="all">Alle <span class="count" id="cnt-all">58</span></span>
-        <span class="filter-btn" data-filter="done">✓ Abgeschlossen <span class="count" id="cnt-done">9</span></span>
-        <span class="filter-btn" data-filter="prog">↗ In Bearbeitung <span class="count" id="cnt-prog">14</span></span>
-        <span class="filter-btn" data-filter="open">○ Offen <span class="count" id="cnt-open">35</span></span>
-        <span class="filter-btn" data-filter="dec">⚡ Entscheidung nötig <span class="count" id="cnt-dec">25</span></span>
+        <span class="fpill on" data-f="all">All <span class="fcnt" id="fc-all"></span></span>
+        <span class="fpill" data-f="done">✓ Done <span class="fcnt" id="fc-done"></span></span>
+        <span class="fpill" data-f="prog">↗ In Progress <span class="fcnt" id="fc-prog"></span></span>
+        <span class="fpill" data-f="open">○ Open <span class="fcnt" id="fc-open"></span></span>
+        <span class="fpill" data-f="dec">⚡ Decision needed <span class="fcnt" id="fc-dec"></span></span>
       </div>
-    </div>
-
-    <div class="roadmap-wrap">
-      <div class="roadmap-header">
-        <div class="rh-cell rh-label">Cluster</div>
-        <div class="rh-cell rh-w1">Welle 1 <span class="rh-sub">Apr – Jun 2026 · Quick wins</span></div>
-        <div class="rh-cell rh-w2">Welle 2 <span class="rh-sub">Jul – Sep 2026 · Harmonisierung</span></div>
-        <div class="rh-cell rh-w3">Welle 3 <span class="rh-sub">Q4 2026 – 2027 · Design Services</span></div>
-      </div>
-      <div id="roadmap-body"></div>
-      <div class="legend">
-        <div class="leg"><span class="leg-dot" style="background:#BBF7D0;border:1px solid #86EFAC"></span>Abgeschlossen</div>
-        <div class="leg"><span class="leg-dot" style="background:#FDE68A;border:1px solid #FCD34D"></span>In Bearbeitung</div>
-        <div class="leg"><span class="leg-dot" style="background:#FECACA;border:1px solid #FCA5A5"></span>Offen</div>
-        <div class="leg"><span class="leg-dot" style="background:#DDD6FE;border:1px solid #C4B5FD"></span>Entscheidung nötig</div>
-        <div class="leg" style="margin-left:auto;font-size:10px;color:#94A3B8">Stand: Juni 2026</div>
-      </div>
+      <button class="btn-add" onclick="openModal(null)">+ Add item</button>
     </div>
   </div>
-
-  <!-- Open Decisions -->
-  <div class="section-gap">
-    <div class="section-header">
-      <div class="section-title">Offene Entscheidungen</div>
-      <span style="font-size:12px;color:var(--text-muted)">25 Entscheidungen · Handlung erforderlich</span>
+  <div class="rm-wrap">
+    <div class="rm-hd">
+      <div class="rm-hd-cell rm-hd-lbl">Cluster</div>
+      <div class="rm-hd-cell rm-hd-w1">Wave 1 <span class="rh-sub">Apr–Jun 2026 · Quick wins</span></div>
+      <div class="rm-hd-cell rm-hd-w2">Wave 2 <span class="rh-sub">Jul–Sep 2026 · Harmonisation</span></div>
+      <div class="rm-hd-cell rm-hd-w3">Wave 3 <span class="rh-sub">Q4 2026–2027 · Design Services</span></div>
     </div>
-    <div class="decisions-grid" id="dec-grid"></div>
+    <div id="rm-body"></div>
+    <div class="legend">
+      <div class="leg"><span class="leg-dot" style="background:#BBF7D0;border:1px solid #86EFAC"></span>Done</div>
+      <div class="leg"><span class="leg-dot" style="background:#FDE68A;border:1px solid #FCD34D"></span>In Progress</div>
+      <div class="leg"><span class="leg-dot" style="background:#FECACA;border:1px solid #FCA5A5"></span>Open</div>
+      <div class="leg"><span class="leg-dot" style="background:#DDD6FE;border:1px solid #C4B5FD"></span>Decision needed</div>
+      <div class="leg" style="margin-left:auto;font-size:10px;color:#94A3B8">Last saved: <span id="last-saved">–</span></div>
+    </div>
   </div>
-
+  <div class="sec-hd">
+    <span class="sec-title">Open Decisions</span>
+    <span style="font-size:12px;color:var(--muted)" id="dec-count"></span>
+  </div>
+  <div class="dec-grid" id="dec-grid"></div>
 </div>
 
-<div class="footer">
-  jupitos × H&amp;Z — PMI Integration Tracker · Vertraulich · Nur für internen Gebrauch
+<!-- Item edit modal -->
+<div class="overlay hidden" id="overlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <div class="modal-hd"><h3 id="modal-title">Edit item</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Title</label><input id="f-title" type="text" placeholder="Milestone / Deliverable"></div>
+      <div class="field-row">
+        <div class="field"><label>Cluster</label>
+          <select id="f-cluster">
+            <option>Governance & PMO</option><option>Communication & PR</option><option>People & Talent</option>
+            <option>Sales & Revenue</option><option>Delivery & Operations</option><option>Backoffice: Finance</option>
+            <option>Backoffice: HR</option><option>Backoffice: IT</option><option>Backoffice: CSC</option><option>Backoffice: Marketing</option>
+          </select>
+        </div>
+        <div class="field"><label>Wave</label>
+          <select id="f-wave"><option value="1">Wave 1</option><option value="2">Wave 2</option><option value="3">Wave 3</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Status</label>
+          <select id="f-status"><option value="open">Open</option><option value="prog">In Progress</option><option value="done">Done</option></select>
+        </div>
+        <div class="field"><label>Impact</label>
+          <select id="f-impact"><option value="H">High</option><option value="M">Medium</option><option value="L">Low</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Lead Owner</label>
+          <select id="f-owner"><option>PMI</option><option>MPs Group</option><option>MPs Digital</option><option>HR</option><option>FIN</option><option>IT</option><option>CSC</option><option>Marketing</option><option>Legal</option><option>TBD</option></select>
+        </div>
+        <div class="field"><label>Target Date</label><input id="f-date" type="text" placeholder="e.g. Jul 26, Q3 26, TBD"></div>
+      </div>
+      <div class="field"><label>Progress: <span id="pct-lbl">0%</span></label>
+        <div class="pct-row"><input type="range" id="f-pct" min="0" max="100" step="5" value="0" oninput="document.getElementById('pct-lbl').textContent=this.value+'%'"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Decision needed?</label>
+          <select id="f-dec"><option value="false">No</option><option value="true">Yes</option></select>
+        </div>
+        <div class="field"><label>Decision Ref</label><input id="f-ref" type="text" placeholder="e.g. D22"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-danger" id="btn-delete" onclick="deleteItem()">Delete</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveItem()">Save</button>
+    </div>
+  </div>
 </div>
+
+<!-- Token modal -->
+<div class="overlay hidden" id="token-overlay">
+  <div class="token-modal">
+    <h3>🔑 GitHub Access Token</h3>
+    <p>Enter your GitHub Personal Access Token to save changes. It stays in your browser only and is never stored in the file.</p>
+    <input type="password" id="token-input" placeholder="ghp_…" autocomplete="off">
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="document.getElementById('token-overlay').classList.add('hidden')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmToken()">Save to GitHub</button>
+    </div>
+    <p class="note">💡 Token needs <strong>repo</strong> scope. It is only kept in memory for this browser session and never written into the HTML file.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const items = [
-  // Governance & PMO
-  {cluster:"Governance & PMO",icon:"⚙️",w:1,title:"Integration team & Meeting-Kadenz",owner:"PMI",status:"prog",pct:50,dec:true,impact:"High",date:"Jun 26",decRef:"D1"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:1,title:"Group Partner Meeting",owner:"PMI",status:"done",pct:100,dec:false,impact:"High",date:"Mai 26"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:1,title:"Management-Struktur bestätigt",owner:"MPs Group",status:"done",pct:100,dec:false,impact:"High",date:"Mai 26"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:1,title:"Vergütungsmodell Partner harmonisiert",owner:"MPs Group",status:"done",pct:100,dec:false,impact:"High",date:"Mai 26"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:1,title:"Signing Authorities definiert",owner:"Legal",status:"prog",pct:0,dec:true,impact:"High",date:"Jul 26",decRef:"D3"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:2,title:"Org-Struktur H&Z Digital",owner:"MPs Digital",status:"open",pct:0,dec:true,impact:"Low",date:"Sep 26",decRef:"D11"},
-  {cluster:"Governance & PMO",icon:"⚙️",w:3,title:"KPI & OKR Framework",owner:"MPs Group",status:"open",pct:0,dec:true,impact:"Med",date:"Q4 26",decRef:"D4"},
-  // Kommunikation & PR
-  {cluster:"Kommunikation & PR",icon:"📢",w:1,title:"Interne Kommunikation gestartet",owner:"PMI",status:"done",pct:100,dec:false,impact:"High",date:"Apr 26"},
-  {cluster:"Kommunikation & PR",icon:"📢",w:1,title:"Externe Kommunikation live",owner:"Marketing",status:"done",pct:100,dec:false,impact:"High",date:"Apr 26"},
-  {cluster:"Kommunikation & PR",icon:"📢",w:1,title:"E-Mail-Signatur aktualisiert",owner:"Marketing",status:"open",pct:0,dec:false,impact:"Med",date:"Jul 26"},
-  // People & Talent
-  {cluster:"People & Talent",icon:"👥",w:1,title:"Welcome Bag versendet",owner:"PMI",status:"done",pct:100,dec:false,impact:"High",date:"Jun 26"},
-  {cluster:"People & Talent",icon:"👥",w:1,title:"Welcome Event (9–10 Jul @HIVE)",owner:"PMI",status:"prog",pct:35,dec:true,impact:"High",date:"Jul 26",decRef:"D10"},
-  {cluster:"People & Talent",icon:"👥",w:1,title:"Key Talent Retention Packages",owner:"MPs Digital",status:"prog",pct:20,dec:true,impact:"High",date:"Sep 26",decRef:"D9"},
-  {cluster:"People & Talent",icon:"👥",w:2,title:"Integration Ambassadors",owner:"PMI",status:"open",pct:0,dec:true,impact:"Med",date:"Jul 26",decRef:"D2"},
-  {cluster:"People & Talent",icon:"👥",w:3,title:"Talent Mapping & Compensation",owner:"HR",status:"prog",pct:0,dec:true,impact:"High",date:"2027",decRef:"D12"},
-  {cluster:"People & Talent",icon:"👥",w:3,title:"eNPS Baseline",owner:"HR",status:"open",pct:0,dec:false,impact:"Med",date:"2027"},
-  {cluster:"People & Talent",icon:"👥",w:3,title:"Recruiting Prozess aligned",owner:"HR",status:"open",pct:0,dec:false,impact:"Med",date:"Q3 26"},
-  // Sales & Revenue
-  {cluster:"Sales & Revenue",icon:"💶",w:1,title:"Cross-sell Pipeline aktiviert",owner:"MPs Digital",status:"done",pct:100,dec:false,impact:"High",date:"Mai 26"},
-  {cluster:"Sales & Revenue",icon:"💶",w:1,title:"jupitos in H&Z Sales-Kadenz",owner:"MPs Digital",status:"done",pct:100,dec:false,impact:"High",date:"Mai 26"},
-  {cluster:"Sales & Revenue",icon:"💶",w:1,title:"Sales Enablement Kit",owner:"CSC",status:"open",pct:0,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Sales & Revenue",icon:"💶",w:1,title:"HubSpot CRM Migration",owner:"Marketing",status:"prog",pct:50,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Sales & Revenue",icon:"💶",w:1,title:"Standard-Verträge (NDA, SOW…)",owner:"FIN",status:"open",pct:0,dec:true,impact:"High",date:"TBD",decRef:"D5"},
-  {cluster:"Sales & Revenue",icon:"💶",w:3,title:"Pricing-Modell (1.350 €/Tag)",owner:"MPs Digital",status:"open",pct:0,dec:true,impact:"High",date:"Q3 26",decRef:"D8"},
-  {cluster:"Sales & Revenue",icon:"💶",w:3,title:"Development Testing Angebot",owner:"MPs Digital",status:"open",pct:0,dec:true,impact:"Med",date:"Q3 26",decRef:"D6"},
-  {cluster:"Sales & Revenue",icon:"💶",w:3,title:"AMS Portfolio Skalierung",owner:"MPs Digital",status:"open",pct:0,dec:true,impact:"High",date:"Q4 26",decRef:"D7"},
-  // Delivery & Operations
-  {cluster:"Delivery & Operations",icon:"🔧",w:1,title:"Staffing-Integrationsmodell",owner:"MPs Digital",status:"prog",pct:60,dec:false,impact:"High",date:"Jun 26"},
-  {cluster:"Delivery & Operations",icon:"🔧",w:2,title:"Nearshoring ausgebaut",owner:"MPs Digital",status:"open",pct:0,dec:true,impact:"High",date:"Q3 26",decRef:"D13"},
-  {cluster:"Delivery & Operations",icon:"🔧",w:3,title:"Utilization-Analyse & Optimierung",owner:"MPs Digital",status:"prog",pct:60,dec:false,impact:"High",date:"Q3 26"},
-  // Finance
-  {cluster:"Backoffice: Finance",icon:"📊",w:1,title:"LucaNet konsolidierte P&L live",owner:"FIN",status:"prog",pct:60,dec:false,impact:"High",date:"Jun 26"},
-  {cluster:"Backoffice: Finance",icon:"📊",w:1,title:"DATEV-Mandate konsolidiert",owner:"FIN",status:"done",pct:100,dec:false,impact:"Med",date:"Jun 26"},
-  {cluster:"Backoffice: Finance",icon:"📊",w:1,title:"Kantata ERP Onboarding",owner:"FIN",status:"open",pct:0,dec:false,impact:"High",date:"Q3 26"},
-  {cluster:"Backoffice: Finance",icon:"📊",w:2,title:"Travel Cost Management (Tool)",owner:"FIN",status:"open",pct:0,dec:true,impact:"Med",date:"Q4 26",decRef:"D14"},
-  {cluster:"Backoffice: Finance",icon:"📊",w:3,title:"Firmenkreditkarten",owner:"FIN",status:"open",pct:0,dec:true,impact:"Med",date:"2027",decRef:"D15"},
-  {cluster:"Backoffice: Finance",icon:"📊",w:3,title:"Design FIN Services (SSC)",owner:"FIN",status:"open",pct:0,dec:false,impact:"High",date:"2027",decRef:"D16"},
-  // HR
-  {cluster:"Backoffice: HR",icon:"🧑‍💼",w:1,title:"Personio Rollout jupitos",owner:"HR",status:"prog",pct:20,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Backoffice: HR",icon:"🧑‍💼",w:2,title:"L&D Programme harmonisiert",owner:"HR",status:"open",pct:0,dec:true,impact:"Med",date:"Q3 26",decRef:"D17"},
-  {cluster:"Backoffice: HR",icon:"🧑‍💼",w:3,title:"Benefits & Policies aligned",owner:"HR",status:"open",pct:0,dec:false,impact:"Med",date:"Q3 26"},
-  {cluster:"Backoffice: HR",icon:"🧑‍💼",w:3,title:"Arbeitsverträge (langfristig)",owner:"HR",status:"open",pct:0,dec:false,impact:"Med",date:"TBD"},
-  {cluster:"Backoffice: HR",icon:"🧑‍💼",w:3,title:"Design HR Services",owner:"HR",status:"open",pct:0,dec:true,impact:"High",date:"2027",decRef:"D18"},
-  // IT
-  {cluster:"Backoffice: IT",icon:"💻",w:1,title:"M365 Tenant Migration",owner:"IT",status:"open",pct:0,dec:true,impact:"High",date:"Q3 26",decRef:"D19"},
-  {cluster:"Backoffice: IT",icon:"💻",w:1,title:"Adressbuch & Kontakte synchronisiert",owner:"IT",status:"open",pct:0,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Backoffice: IT",icon:"💻",w:2,title:"SaaS Lizenz-Audit",owner:"IT",status:"open",pct:0,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Backoffice: IT",icon:"💻",w:2,title:"Data Protection Setup",owner:"FIN",status:"prog",pct:10,dec:false,impact:"Med",date:"Jul 26"},
-  {cluster:"Backoffice: IT",icon:"💻",w:2,title:"IT Equipment & Verantwortung",owner:"IT",status:"open",pct:0,dec:true,impact:"Med",date:"Jul 26",decRef:"D19"},
-  {cluster:"Backoffice: IT",icon:"💻",w:2,title:"IT Security & VPN",owner:"IT",status:"open",pct:0,dec:true,impact:"Med",date:"Jul 26",decRef:"D19"},
-  {cluster:"Backoffice: IT",icon:"💻",w:3,title:"Design IT Services",owner:"IT",status:"open",pct:0,dec:true,impact:"High",date:"2027",decRef:"D19"},
-  // CSC
-  {cluster:"Backoffice: CSC",icon:"📋",w:2,title:"One-Pager & Success Story Library",owner:"CSC",status:"open",pct:0,dec:false,impact:"High",date:"Jul 26"},
-  {cluster:"Backoffice: CSC",icon:"📋",w:2,title:"Proposal Factory auf jupitos erweitert",owner:"CSC",status:"open",pct:0,dec:false,impact:"Med",date:"Aug 26"},
-  {cluster:"Backoffice: CSC",icon:"📋",w:2,title:"SharePoint Migration",owner:"CSC",status:"open",pct:0,dec:true,impact:"Med",date:"Jul 26",decRef:"D20"},
-  {cluster:"Backoffice: CSC",icon:"📋",w:3,title:"SlideHub Credentials migriert",owner:"CSC",status:"prog",pct:0,dec:false,impact:"Med",date:"Aug 26"},
-  {cluster:"Backoffice: CSC",icon:"📋",w:3,title:"Design CSC Services",owner:"CSC",status:"open",pct:0,dec:true,impact:"High",date:"2027",decRef:"D21"},
-  // Marketing
-  {cluster:"Backoffice: Marketing",icon:"📣",w:2,title:"LinkedIn & Website Rebranding",owner:"Marketing",status:"prog",pct:50,dec:false,impact:"Med",date:"Q3 26"},
-  {cluster:"Backoffice: Marketing",icon:"📣",w:2,title:"Messe & Marketing-Events",owner:"Marketing",status:"prog",pct:20,dec:false,impact:"High",date:"Q3 26"},
-  {cluster:"Backoffice: Marketing",icon:"📣",w:3,title:"Design Marketing Services",owner:"Marketing",status:"open",pct:0,dec:true,impact:"High",date:"2027",decRef:"D22"},
+const GH_REPO='JanaPanhuyzen/pmi-dashboard';
+const GH_FILE='index.html';
+const ICONS={'Governance & PMO':'⚙️','Communication & PR':'📢','People & Talent':'👥','Sales & Revenue':'💶','Delivery & Operations':'🔧','Backoffice: Finance':'📊','Backoffice: HR':'🧑‍💼','Backoffice: IT':'💻','Backoffice: CSC':'📋','Backoffice: Marketing':'📣'};
+
+let items=[
+  {id:1,cluster:'Governance & PMO',w:1,title:'Integration team & meeting cadence',owner:'PMI',status:'prog',pct:50,dec:true,impact:'H',date:'Jun 26',ref:'D1'},
+  {id:2,cluster:'Governance & PMO',w:1,title:'Group Partner Meeting',owner:'PMI',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
+  {id:3,cluster:'Governance & PMO',w:1,title:'Management structure confirmed',owner:'MPs Group',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
+  {id:4,cluster:'Governance & PMO',w:1,title:'Partner compensation model harmonised',owner:'MPs Group',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
+  {id:5,cluster:'Governance & PMO',w:1,title:'Signing authorities defined',owner:'Legal',status:'prog',pct:0,dec:true,impact:'H',date:'Jul 26',ref:'D3'},
+  {id:6,cluster:'Governance & PMO',w:2,title:'H&Z Digital org structure',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'L',date:'Sep 26',ref:'D11'},
+  {id:7,cluster:'Governance & PMO',w:3,title:'KPI & OKR framework',owner:'MPs Group',status:'open',pct:0,dec:true,impact:'M',date:'Q4 26',ref:'D4'},
+  {id:8,cluster:'Communication & PR',w:1,title:'Internal communication launched',owner:'PMI',status:'done',pct:100,dec:false,impact:'H',date:'Apr 26'},
+  {id:9,cluster:'Communication & PR',w:1,title:'External communication live',owner:'Marketing',status:'done',pct:100,dec:false,impact:'H',date:'Apr 26'},
+  {id:10,cluster:'Communication & PR',w:1,title:'Email signature updated',owner:'Marketing',status:'open',pct:0,dec:false,impact:'M',date:'Jul 26'},
+  {id:11,cluster:'People & Talent',w:1,title:'Welcome bag sent',owner:'PMI',status:'done',pct:100,dec:false,impact:'H',date:'Jun 26'},
+  {id:12,cluster:'People & Talent',w:1,title:'Welcome Event (9–10 Jul @HIVE)',owner:'PMI',status:'prog',pct:35,dec:true,impact:'H',date:'Jul 26',ref:'D10'},
+  {id:13,cluster:'People & Talent',w:1,title:'Key talent retention packages',owner:'MPs Digital',status:'prog',pct:20,dec:true,impact:'H',date:'Sep 26',ref:'D9'},
+  {id:14,cluster:'People & Talent',w:2,title:'Integration ambassadors nominated',owner:'PMI',status:'open',pct:0,dec:true,impact:'M',date:'Jul 26',ref:'D2'},
+  {id:15,cluster:'People & Talent',w:3,title:'Talent mapping & compensation benchmark',owner:'HR',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D12'},
+  {id:16,cluster:'People & Talent',w:3,title:'eNPS baseline measurement',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'2027'},
+  {id:17,cluster:'People & Talent',w:3,title:'Recruiting process aligned',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'Q3 26'},
+  {id:18,cluster:'Sales & Revenue',w:1,title:'Cross-sell pipeline activated',owner:'MPs Digital',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
+  {id:19,cluster:'Sales & Revenue',w:1,title:'jupitos in H&Z sales cadence',owner:'MPs Digital',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
+  {id:20,cluster:'Sales & Revenue',w:1,title:'Sales enablement kit',owner:'CSC',status:'open',pct:0,dec:false,impact:'H',date:'Jul 26'},
+  {id:21,cluster:'Sales & Revenue',w:1,title:'HubSpot CRM migration',owner:'Marketing',status:'prog',pct:50,dec:false,impact:'H',date:'Jul 26'},
+  {id:22,cluster:'Sales & Revenue',w:1,title:'Standard contracts (NDA, SOW…)',owner:'FIN',status:'open',pct:0,dec:true,impact:'H',date:'TBD',ref:'D5'},
+  {id:23,cluster:'Sales & Revenue',w:3,title:'Pricing model (€1,350/day)',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q3 26',ref:'D8'},
+  {id:24,cluster:'Sales & Revenue',w:3,title:'Development testing offering',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'M',date:'Q3 26',ref:'D6'},
+  {id:25,cluster:'Sales & Revenue',w:3,title:'AMS portfolio scaling',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q4 26',ref:'D7'},
+  {id:26,cluster:'Delivery & Operations',w:1,title:'Staffing integration model',owner:'MPs Digital',status:'prog',pct:60,dec:false,impact:'H',date:'Jun 26'},
+  {id:27,cluster:'Delivery & Operations',w:2,title:'Nearshoring utilisation expanded',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q3 26',ref:'D13'},
+  {id:28,cluster:'Delivery & Operations',w:3,title:'Utilisation analysis & optimisation',owner:'MPs Digital',status:'prog',pct:60,dec:false,impact:'H',date:'Q3 26'},
+  {id:29,cluster:'Backoffice: Finance',w:1,title:'LucaNet consolidated P&L live',owner:'FIN',status:'prog',pct:60,dec:false,impact:'H',date:'Jun 26'},
+  {id:30,cluster:'Backoffice: Finance',w:1,title:'DATEV mandates consolidated',owner:'FIN',status:'done',pct:100,dec:false,impact:'M',date:'Jun 26'},
+  {id:31,cluster:'Backoffice: Finance',w:1,title:'Kantata ERP onboarding',owner:'FIN',status:'open',pct:0,dec:false,impact:'H',date:'Q3 26'},
+  {id:32,cluster:'Backoffice: Finance',w:2,title:'Travel cost management tool',owner:'FIN',status:'open',pct:0,dec:true,impact:'M',date:'Q4 26',ref:'D14'},
+  {id:33,cluster:'Backoffice: Finance',w:3,title:'Company credit cards',owner:'FIN',status:'open',pct:0,dec:true,impact:'M',date:'2027',ref:'D15'},
+  {id:34,cluster:'Backoffice: Finance',w:3,title:'Design FIN Services (SSC)',owner:'FIN',status:'open',pct:0,dec:false,impact:'H',date:'2027'},
+  {id:35,cluster:'Backoffice: HR',w:1,title:'Personio rollout jupitos',owner:'HR',status:'prog',pct:20,dec:false,impact:'H',date:'Jul 26'},
+  {id:36,cluster:'Backoffice: HR',w:2,title:'L&D programmes harmonised',owner:'HR',status:'open',pct:0,dec:true,impact:'M',date:'Q3 26',ref:'D17'},
+  {id:37,cluster:'Backoffice: HR',w:3,title:'Benefits & policies aligned',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'Q3 26'},
+  {id:38,cluster:'Backoffice: HR',w:3,title:'Employment contracts (long-term)',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'TBD'},
+  {id:39,cluster:'Backoffice: HR',w:3,title:'Design HR Services',owner:'HR',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D18'},
+  {id:40,cluster:'Backoffice: IT',w:1,title:'M365 tenant migration',owner:'IT',status:'open',pct:0,dec:true,impact:'H',date:'Q3 26',ref:'D19'},
+  {id:41,cluster:'Backoffice: IT',w:1,title:'Address book & contacts synced',owner:'IT',status:'open',pct:0,dec:false,impact:'H',date:'Jul 26'},
+  {id:42,cluster:'Backoffice: IT',w:2,title:'SaaS licence audit',owner:'IT',status:'open',pct:0,dec:false,impact:'H',date:'Jul 26'},
+  {id:43,cluster:'Backoffice: IT',w:2,title:'Data protection setup',owner:'FIN',status:'prog',pct:10,dec:false,impact:'M',date:'Jul 26'},
+  {id:44,cluster:'Backoffice: IT',w:2,title:'IT equipment responsibility',owner:'IT',status:'open',pct:0,dec:true,impact:'M',date:'Jul 26',ref:'D19'},
+  {id:45,cluster:'Backoffice: IT',w:2,title:'IT security & VPN',owner:'IT',status:'open',pct:0,dec:true,impact:'M',date:'Jul 26',ref:'D19'},
+  {id:46,cluster:'Backoffice: IT',w:3,title:'Design IT Services',owner:'IT',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D19'},
+  {id:47,cluster:'Backoffice: CSC',w:2,title:'One-pager & success story library',owner:'CSC',status:'open',pct:0,dec:false,impact:'H',date:'Jul 26'},
+  {id:48,cluster:'Backoffice: CSC',w:2,title:'Proposal factory extended to jupitos',owner:'CSC',status:'open',pct:0,dec:false,impact:'M',date:'Aug 26'},
+  {id:49,cluster:'Backoffice: CSC',w:2,title:'SharePoint migration',owner:'CSC',status:'open',pct:0,dec:true,impact:'M',date:'Jul 26',ref:'D20'},
+  {id:50,cluster:'Backoffice: CSC',w:3,title:'SlideHub credentials migrated',owner:'CSC',status:'prog',pct:0,dec:false,impact:'M',date:'Aug 26'},
+  {id:51,cluster:'Backoffice: CSC',w:3,title:'Design CSC Services',owner:'CSC',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D21'},
+  {id:52,cluster:'Backoffice: Marketing',w:2,title:'LinkedIn & website rebrand',owner:'Marketing',status:'prog',pct:50,dec:false,impact:'M',date:'Q3 26'},
+  {id:53,cluster:'Backoffice: Marketing',w:2,title:'Trade fairs & marketing events',owner:'Marketing',status:'prog',pct:20,dec:false,impact:'H',date:'Q3 26'},
+  {id:54,cluster:'Backoffice: Marketing',w:3,title:'Design Marketing Services',owner:'Marketing',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D22'},
+];
+let decisions=[
+  {ref:'D1',title:'Integration team & meeting cadence',owner:'Jana/Marcel',date:'Jun 26',status:'review'},
+  {ref:'D2',title:'Integration ambassadors',owner:'Jana/Marcel/Klaus',date:'Jul 26',status:'open'},
+  {ref:'D3',title:'Signing authorities',owner:'MP Group',date:'Jul 26',status:'open'},
+  {ref:'D4',title:'KPI & OKR framework',owner:'COO',date:'Q4 26',status:'open'},
+  {ref:'D5',title:'Standard contracts (NDA, SOW…)',owner:'COO',date:'Jul 26',status:'open'},
+  {ref:'D6',title:'Development testing offering',owner:'MPs Digital',date:'Q3 26',status:'open'},
+  {ref:'D7',title:'AMS portfolio scaling',owner:'MPs Digital',date:'Q4 26',status:'open'},
+  {ref:'D8',title:'Pricing model (€1,350/day)',owner:'MPs Digital',date:'Q3 26',status:'open'},
+  {ref:'D9',title:'Key talent retention packages',owner:'MPs Digital',date:'Jul 26',status:'open'},
+  {ref:'D10',title:'Welcome event agenda & budget',owner:'All',date:'Jun 26',status:'review'},
+  {ref:'D11',title:'H&Z Digital org structure',owner:'MPs Digital',date:'Sep 26',status:'open'},
+  {ref:'D12',title:'Talent mapping & compensation',owner:'MPs Digital',date:'Q4 26',status:'open'},
+  {ref:'D13',title:'Nearshoring strategy',owner:'MPs Digital',date:'Q3 26',status:'open'},
+  {ref:'D14',title:'Travel cost management tool',owner:'COO',date:'Q4 26',status:'open'},
+  {ref:'D15',title:'Company credit cards',owner:'COO',date:'2027',status:'open'},
+  {ref:'D16',title:'Design FIN Services',owner:'COO',date:'2027',status:'open'},
+  {ref:'D17',title:'L&D programmes harmonised',owner:'COO',date:'Q3 26',status:'open'},
+  {ref:'D18',title:'Design HR Services',owner:'COO',date:'2027',status:'open'},
+  {ref:'D19',title:'Design IT Services & M365',owner:'COO',date:'2027',status:'open'},
+  {ref:'D20',title:'SharePoint migration',owner:'COO',date:'TBD',status:'open'},
+  {ref:'D21',title:'Design CSC Services',owner:'COO',date:'2027',status:'open'},
+  {ref:'D22',title:'Design Marketing Services',owner:'TBD',date:'2027',status:'open'},
+  {ref:'D23',title:'Office supplies responsibility',owner:'COO',date:'TBD',status:'open'},
+  {ref:'D24',title:'Mobile phone contracts',owner:'COO',date:'TBD',status:'open'},
+  {ref:'D25',title:'Company cars / fleet',owner:'TBD',date:'TBD',status:'open'},
 ];
 
-const decisions = [
-  {ref:"D1",title:"Integration team & Meeting-Kadenz",owner:"Jana/Marcel",date:"Jun 26",status:"In Review"},
-  {ref:"D2",title:"Integration Ambassadors",owner:"Jana/Marcel/Klaus",date:"Jul 26",status:"Open"},
-  {ref:"D3",title:"Signing Authorities",owner:"MP Group",date:"Jul 26",status:"Open"},
-  {ref:"D4",title:"KPI & OKR Framework",owner:"COO",date:"Q4 26",status:"Open"},
-  {ref:"D5",title:"Standard-Verträge (NDA, SOW…)",owner:"COO",date:"Jul 26",status:"Open"},
-  {ref:"D6",title:"Development Testing Angebot",owner:"MPs Digital",date:"Q3 26",status:"Open"},
-  {ref:"D7",title:"AMS Portfolio Skalierung",owner:"MPs Digital",date:"Q4 26",status:"Open"},
-  {ref:"D8",title:"Pricing-Modell (1.350 €/Tag)",owner:"MPs Digital",date:"Q3 26",status:"Open"},
-  {ref:"D9",title:"Key Talent Retention Packages",owner:"MPs Digital",date:"Jul 26",status:"Open"},
-  {ref:"D10",title:"Welcome Event Agenda & Budget",owner:"All",date:"Jun 26",status:"In Review"},
-  {ref:"D11",title:"Org-Struktur H&Z Digital",owner:"MPs Digital",date:"Sep 26",status:"Open"},
-  {ref:"D12",title:"Talent Mapping & Compensation",owner:"MPs Digital",date:"Q4 26",status:"Open"},
-  {ref:"D13",title:"Nearshoring Strategie",owner:"MPs Digital",date:"Q3 26",status:"Open"},
-  {ref:"D14",title:"Travel Cost Management Tool",owner:"COO",date:"Q4 26",status:"Open"},
-  {ref:"D15",title:"Firmenkreditkarten",owner:"COO",date:"2027",status:"Open"},
-  {ref:"D16",title:"Design FIN Services",owner:"COO",date:"2027",status:"Open"},
-  {ref:"D17",title:"L&D Programme harmonisiert",owner:"COO",date:"Q3 26",status:"Open"},
-  {ref:"D18",title:"Design HR Services",owner:"COO",date:"2027",status:"Open"},
-  {ref:"D19",title:"Design IT Services & M365",owner:"COO",date:"2027",status:"Open"},
-  {ref:"D20",title:"SharePoint Migration",owner:"COO",date:"TBD",status:"Open"},
-  {ref:"D21",title:"Design CSC Services",owner:"COO",date:"2027",status:"Open"},
-  {ref:"D22",title:"Design Marketing Services",owner:"TBD",date:"2027",status:"Open"},
-  {ref:"D23",title:"Office Supplies Verantwortung",owner:"COO",date:"TBD",status:"Open"},
-  {ref:"D24",title:"Mobilfunk-Verträge",owner:"COO",date:"TBD",status:"Open"},
-  {ref:"D25",title:"Fuhrpark / Firmenwagen",owner:"TBD",date:"TBD",status:"Open"},
-];
+let nextId=100,activeFilter='all',editingId=null,dirty=false,ghToken=null;
 
-let activeFilter = 'all';
-
-function cardClass(item){
-  if(item.dec) return 's-dec';
-  if(item.status==='done') return 's-done';
-  if(item.status==='prog') return 's-prog';
-  return 's-open';
-}
-function statusDot(item){
-  if(item.status==='done') return '✓';
-  if(item.status==='prog') return '↗';
-  return '○';
-}
-function impactTag(i){
-  const m={High:'tag-high',Med:'tag-med',Low:'tag-low'};
-  return `<span class="tag ${m[i]||'tag-low'}">${i==='High'?'Hoch':i==='Med'?'Mittel':'Niedrig'}</span>`;
-}
-
-function matchFilter(item){
-  if(activeFilter==='all') return true;
-  if(activeFilter==='done') return item.status==='done';
-  if(activeFilter==='prog') return item.status==='prog';
-  if(activeFilter==='open') return item.status==='open' && !item.dec;
-  if(activeFilter==='dec') return item.dec;
+function cc(it){return it.dec?'s-dec':it.status==='done'?'s-done':it.status==='prog'?'s-prog':'s-open';}
+function dot(it){return it.status==='done'?'✓':it.status==='prog'?'↗':'○';}
+function imp(i){return i==='H'?'High':i==='M'?'Medium':'Low';}
+function mf(it){
+  if(activeFilter==='all')return true;
+  if(activeFilter==='done')return it.status==='done';
+  if(activeFilter==='prog')return it.status==='prog';
+  if(activeFilter==='open')return it.status==='open'&&!it.dec;
+  if(activeFilter==='dec')return it.dec;
   return true;
 }
-
-function render(){
-  const clusters = [...new Set(items.map(i=>i.cluster))];
-  const body = document.getElementById('roadmap-body');
-  body.innerHTML = '';
-
-  clusters.forEach(cl => {
-    const icon = items.find(i=>i.cluster===cl).icon;
-    const w1 = items.filter(i=>i.cluster===cl&&i.w===1&&matchFilter(i));
-    const w2 = items.filter(i=>i.cluster===cl&&i.w===2&&matchFilter(i));
-    const w3 = items.filter(i=>i.cluster===cl&&i.w===3&&matchFilter(i));
-    if(!w1.length&&!w2.length&&!w3.length) return;
-
-    const makeCards = arr => arr.length ? arr.map(item=>`
-      <div class="item-card ${cardClass(item)}">
-        <div class="card-top">
-          <span class="card-status-dot">${statusDot(item)}</span>
-          <span class="card-title">${item.title}</span>
-        </div>
-        <div class="card-meta">${item.owner} · ${item.date}</div>
-        <div class="card-tags">
-          ${impactTag(item.impact)}
-          ${item.dec?`<span class="tag tag-dec">⚡ ${item.decRef||'Entscheid'}</span>`:''}
-        </div>
-        ${item.status==='prog'?`<div class="progress-mini"><div class="progress-mini-fill" style="width:${item.pct}%"></div></div>`:''}
-      </div>`).join('') : '<span class="empty-cell">–</span>';
-
-    const row = document.createElement('div');
-    row.className = 'cluster-row';
-    row.innerHTML = `
-      <div class="cluster-label">
-        <span class="cluster-icon">${icon}</span>
-        <span class="cluster-name">${cl}</span>
-      </div>
-      <div class="wave-col">${makeCards(w1)}</div>
-      <div class="wave-col">${makeCards(w2)}</div>
-      <div class="wave-col">${makeCards(w3)}</div>`;
+function renderKPIs(){
+  const t=items.length,d=items.filter(i=>i.status==='done').length;
+  const w1=items.filter(i=>i.w==1),w2=items.filter(i=>i.w==2),w3=items.filter(i=>i.w==3);
+  const w1d=w1.filter(i=>i.status==='done').length,w2d=w2.filter(i=>i.status==='done').length,w3d=w3.filter(i=>i.status==='done').length;
+  document.getElementById('kpi-grid').innerHTML=`
+    <div class="kpi total"><div class="kpi-lbl">Total</div><div class="kpi-val">${t}</div><div class="kpi-sub">${d} done · ${Math.round(d/t*100)}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(d/t*100)}%;background:var(--navy)"></div></div></div>
+    <div class="kpi w1"><div class="kpi-lbl">Wave 1</div><div class="kpi-val">${w1.length}</div><div class="kpi-sub">${w1d} done · ${Math.round(w1d/w1.length*100)||0}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w1d/w1.length*100)||0}%;background:var(--blue)"></div></div></div>
+    <div class="kpi w2"><div class="kpi-lbl">Wave 2</div><div class="kpi-val">${w2.length}</div><div class="kpi-sub">${w2d} done · ${Math.round(w2d/w2.length*100)||0}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w2d/w2.length*100)||0}%;background:var(--green)"></div></div></div>
+    <div class="kpi w3"><div class="kpi-lbl">Wave 3</div><div class="kpi-val">${w3.length}</div><div class="kpi-sub">${w3d} done · design phase</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w3d/w3.length*100)||0}%;background:var(--amber)"></div></div></div>
+    <div class="kpi dec"><div class="kpi-lbl">Decisions open</div><div class="kpi-val">${items.filter(i=>i.dec).length}</div><div class="kpi-sub">action required</div><div class="kpi-bar"><div class="kpi-fill" style="width:100%;background:var(--purple)"></div></div></div>`;
+}
+function renderCounts(){
+  document.getElementById('fc-all').textContent=items.length;
+  document.getElementById('fc-done').textContent=items.filter(i=>i.status==='done').length;
+  document.getElementById('fc-prog').textContent=items.filter(i=>i.status==='prog').length;
+  document.getElementById('fc-open').textContent=items.filter(i=>i.status==='open'&&!i.dec).length;
+  document.getElementById('fc-dec').textContent=items.filter(i=>i.dec).length;
+}
+function renderRoadmap(){
+  const clusters=[...new Set(items.map(i=>i.cluster))];
+  const body=document.getElementById('rm-body');body.innerHTML='';
+  clusters.forEach(cl=>{
+    const icon=ICONS[cl]||'📌';
+    const w1=items.filter(i=>i.cluster===cl&&i.w===1&&mf(i));
+    const w2=items.filter(i=>i.cluster===cl&&i.w===2&&mf(i));
+    const w3=items.filter(i=>i.cluster===cl&&i.w===3&&mf(i));
+    if(!w1.length&&!w2.length&&!w3.length)return;
+    const mk=arr=>arr.length?arr.map(it=>`
+      <div class="card ${cc(it)}" onclick="openModal(${it.id})">
+        <button class="card-edit-btn" onclick="openModal(${it.id});event.stopPropagation()">✏︎</button>
+        <div class="card-top"><span class="card-dot">${dot(it)}</span><span class="card-title">${it.title}</span></div>
+        <div class="card-meta">${it.owner} · ${it.date}</div>
+        <div class="card-tags"><span class="tag tag-${it.impact}">${imp(it.impact)}</span>${it.dec?`<span class="tag tag-D">⚡ ${it.ref||'Decision'}</span>`:''}</div>
+        ${it.status==='prog'?`<div class="prog-bar"><div class="prog-fill" style="width:${it.pct}%"></div></div>`:''}
+      </div>`).join(''):'<span class="empty-col">–</span>';
+    const row=document.createElement('div');row.className='cl-row';
+    row.innerHTML=`<div class="cl-lbl"><span class="cl-icon">${icon}</span><span class="cl-name">${cl}</span></div><div class="w-col">${mk(w1)}</div><div class="w-col">${mk(w2)}</div><div class="w-col">${mk(w3)}</div>`;
     body.appendChild(row);
   });
 }
-
 function renderDecisions(){
-  const grid = document.getElementById('dec-grid');
-  grid.innerHTML = decisions.map(d=>`
-    <div class="dec-card">
-      <div class="dec-ref">${d.ref}</div>
-      <div class="dec-title">${d.title}</div>
-      <div class="dec-meta">Owner: ${d.owner} · Fälligkeit: ${d.date}</div>
-      <span class="dec-status ${d.status==='In Review'?'in-review':''}">${d.status==='In Review'?'In Review':'Offen'}</span>
-    </div>`).join('');
+  const open=decisions.filter(d=>d.status!=='decided');
+  document.getElementById('dec-count').textContent=`${open.length} decisions · action required`;
+  document.getElementById('dec-grid').innerHTML=open.map(d=>`
+    <div class="dec-card"><div class="dec-ref">${d.ref}</div><div class="dec-title">${d.title}</div>
+    <div class="dec-meta">Owner: ${d.owner} · Due: ${d.date}</div>
+    <span class="dec-badge ${d.status}">${d.status==='review'?'In Review':d.status==='decided'?'Decided':'Open'}</span></div>`).join('');
 }
+function renderAll(){renderKPIs();renderCounts();renderRoadmap();renderDecisions();}
 
-// Filters
-document.getElementById('filters').addEventListener('click', e=>{
-  const btn = e.target.closest('.filter-btn');
-  if(!btn) return;
-  activeFilter = btn.dataset.filter;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
+document.getElementById('filters').addEventListener('click',e=>{
+  const p=e.target.closest('.fpill');if(!p)return;
+  activeFilter=p.dataset.f;
+  document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('on'));p.classList.add('on');
+  renderRoadmap();
 });
 
-// Date
-document.getElementById('live-date').textContent = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});
+function openModal(id){
+  editingId=id;
+  const it=id!=null?items.find(i=>i.id===id):null;
+  document.getElementById('modal-title').textContent=it?'Edit item':'Add item';
+  document.getElementById('btn-delete').style.display=it?'':'none';
+  document.getElementById('f-title').value=it?.title||'';
+  document.getElementById('f-cluster').value=it?.cluster||'Governance & PMO';
+  document.getElementById('f-wave').value=it?.w||1;
+  document.getElementById('f-status').value=it?.status||'open';
+  document.getElementById('f-impact').value=it?.impact||'M';
+  document.getElementById('f-owner').value=it?.owner||'PMI';
+  document.getElementById('f-date').value=it?.date||'';
+  document.getElementById('f-pct').value=it?.pct||0;
+  document.getElementById('pct-lbl').textContent=(it?.pct||0)+'%';
+  document.getElementById('f-dec').value=it?.dec?'true':'false';
+  document.getElementById('f-ref').value=it?.ref||'';
+  document.getElementById('overlay').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('overlay').classList.add('hidden');editingId=null;}
+function closeOnBg(e){if(e.target===document.getElementById('overlay'))closeModal();}
+function saveItem(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){alert('Please enter a title.');return;}
+  const obj={id:editingId!=null?editingId:nextId++,cluster:document.getElementById('f-cluster').value,w:parseInt(document.getElementById('f-wave').value),title,owner:document.getElementById('f-owner').value,status:document.getElementById('f-status').value,pct:parseInt(document.getElementById('f-pct').value),dec:document.getElementById('f-dec').value==='true',impact:document.getElementById('f-impact').value,date:document.getElementById('f-date').value||'TBD',ref:document.getElementById('f-ref').value||undefined};
+  if(editingId!=null){const idx=items.findIndex(i=>i.id===editingId);if(idx>-1)items[idx]=obj;}else items.push(obj);
+  closeModal();markDirty();renderAll();
+}
+function deleteItem(){if(!confirm('Delete this item?'))return;items=items.filter(i=>i.id!==editingId);closeModal();markDirty();renderAll();}
+function markDirty(){dirty=true;document.getElementById('btn-save').disabled=false;document.getElementById('save-st').textContent='Unsaved changes';}
+function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
-render();
-renderDecisions();
+function initSave(){
+  if(ghToken){pushToGithub();}
+  else{document.getElementById('token-input').value='';document.getElementById('token-overlay').classList.remove('hidden');}
+}
+function confirmToken(){
+  const t=document.getElementById('token-input').value.trim();
+  if(!t){alert('Please enter a token.');return;}
+  ghToken=t;
+  document.getElementById('token-overlay').classList.add('hidden');
+  pushToGithub();
+}
+
+async function pushToGithub(){
+  const btn=document.getElementById('btn-save');
+  btn.disabled=true;btn.textContent='Saving…';
+  document.getElementById('save-st').textContent='Pushing to GitHub…';
+  try{
+    // Inject current data into the page's own script, then upload the whole page
+    const html=buildHtml();
+    const encoded=btoa(unescape(encodeURIComponent(html)));
+    const meta=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json'}});
+    const mj=await meta.json();
+    const res=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{method:'PUT',headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Dashboard update',content:encoded,sha:mj.sha})});
+    if(res.ok){
+      dirty=false;
+      const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      document.getElementById('last-saved').textContent=now;
+      document.getElementById('save-st').textContent='Saved ✓';
+      btn.textContent='↑ Save to GitHub';btn.disabled=false;
+      showToast('✓ Saved — GitHub Pages updates in ~30 seconds');
+    }else{const e=await res.json();throw new Error(e.message);}
+  }catch(e){document.getElementById('save-st').textContent='Failed';btn.textContent='↑ Save to GitHub';btn.disabled=false;showToast('⚠ '+e.message,5000);console.error(e);}
+}
+
+function buildHtml(){
+  // Clone current HTML and inject updated data arrays before upload
+  const s=document.documentElement.outerHTML;
+  const itemsJson=JSON.stringify(items);
+  const decsJson=JSON.stringify(decisions);
+  // Replace the data arrays in the script
+  return s
+    .replace(/let items=\[[\s\S]*?\];(?=\s*let decisions)/, 'let items='+itemsJson+';')
+    .replace(/let decisions=\[[\s\S]*?\];(?=\s*\n\s*let nextId)/, 'let decisions='+decsJson+';');
+}
+
+document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+renderAll();
 </script>
 </body>
 </html>
