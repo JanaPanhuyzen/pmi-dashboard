@@ -5,22 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>jupitos × H&Z — PMI Integration Roadmap</title>
 <style>
-:root{--navy:#0F1F3D;--navy2:#1A2F52;--blue:#2563EB;--blue-l:#EFF6FF;--green:#16A34A;--green-l:#F0FDF4;--amber:#D97706;--amber-l:#FFFBEB;--red:#DC2626;--red-l:#FEF2F2;--purple:#7C3AED;--purple-l:#F5F3FF;--slate:#64748B;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--bg:#F1F5F9;--white:#FFFFFF;--r:10px;--rs:6px}
+:root{--navy:#0F1F3D;--navy2:#1A2F52;--blue:#2563EB;--green:#16A34A;--amber:#D97706;--red:#DC2626;--purple:#7C3AED;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--bg:#F1F5F9;--r:10px;--rs:6px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ── Topbar ── */
 .topbar{background:var(--navy);color:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.25)}
 .tb-left{display:flex;align-items:center;gap:10px}
 .tb-logo{background:var(--blue);font-size:11px;font-weight:700;letter-spacing:.07em;padding:3px 8px;border-radius:4px}
 .tb-name{font-size:14px;font-weight:600}
-.tb-sub{font-size:12px;color:rgba(255,255,255,.45);margin-left:4px}
+.tb-sub{font-size:12px;color:rgba(255,255,255,.4);margin-left:4px}
 .tb-right{display:flex;align-items:center;gap:10px}
-.tb-date{font-size:12px;color:rgba(255,255,255,.45)}
-.badge{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
-.btn-save{background:var(--blue);color:#fff;border:none;font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.tb-date{font-size:12px;color:rgba(255,255,255,.4)}
+.badge-live{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.btn-save{background:var(--blue);color:#fff;border:none;font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
 .btn-save:hover{background:#1D4ED8}
-.btn-save:disabled{opacity:.45;cursor:not-allowed}
-.save-st{font-size:11px;color:rgba(255,255,255,.55)}
-.wrap{max-width:1300px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+.btn-save:disabled{opacity:.4;cursor:not-allowed}
+.save-st{font-size:11px;color:rgba(255,255,255,.5)}
+
+/* ── Tabs ── */
+.tabs{background:var(--navy2);display:flex;padding:0 1.5rem;gap:0}
+.tab{font-size:13px;font-weight:500;color:rgba(255,255,255,.5);padding:10px 18px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:rgba(255,255,255,.8)}
+.tab.active{color:#fff;border-bottom-color:var(--blue)}
+
+/* ── Layout ── */
+.wrap{max-width:1380px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+.page{display:none}.page.active{display:block}
+
+/* ── KPIs ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.25rem}
 .kpi{background:#fff;border:0.5px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
@@ -30,16 +43,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
 .kpi-bar{height:3px;background:#E2E8F0;border-radius:2px;overflow:hidden;margin-top:8px}
 .kpi-fill{height:100%;border-radius:2px}
+
+/* ── Section ── */
 .sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:8px}
 .sec-title{font-size:15px;font-weight:600}
 .btn-add{background:var(--navy);color:#fff;border:none;font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;transition:background .15s}
 .btn-add:hover{background:var(--navy2)}
+
+/* ── Filters ── */
 .filters{display:flex;gap:6px;flex-wrap:wrap}
 .fpill{font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
 .fpill:hover{border-color:var(--blue);color:var(--blue)}
 .fpill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .fcnt{font-size:10px;padding:0 5px;border-radius:10px;background:rgba(255,255,255,.2)}
 .fpill:not(.on) .fcnt{background:#F1F5F9;color:var(--muted)}
+
+/* ── Roadmap grid ── */
 .rm-wrap{background:#fff;border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.25rem}
 .rm-hd{display:grid;grid-template-columns:176px repeat(3,1fr);border-bottom:1px solid var(--border)}
 .rm-hd-cell{padding:9px 12px;font-size:11px;font-weight:700;letter-spacing:.04em;border-right:0.5px solid var(--border)}
@@ -54,6 +73,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cl-name{font-size:11.5px;font-weight:600;line-height:1.3}
 .w-col{padding:7px;border-right:0.5px solid var(--border);display:flex;flex-direction:column;gap:5px;min-height:56px}
 .w-col:last-child{border-right:none}
+
+/* ── Cards ── */
 .card{border-radius:var(--rs);padding:7px 9px;border:1px solid transparent;cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
 .card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.09)}
 .card.s-done{background:#F0FDF4;border-color:#BBF7D0}.card.s-prog{background:#FFFBEB;border-color:#FDE68A}.card.s-open{background:#FEF2F2;border-color:#FECACA}.card.s-dec{background:#F5F3FF;border-color:#DDD6FE}
@@ -61,7 +82,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .card-dot{font-size:9px;margin-top:2px;flex-shrink:0}
 .card-title{font-size:11px;font-weight:600;line-height:1.35}
 .s-done .card-title{color:#14532D}.s-prog .card-title{color:#713F12}.s-open .card-title{color:#7F1D1D}.s-dec .card-title{color:#4C1D95}
-.card-meta{font-size:10px;margin-bottom:3px;opacity:.75}
+.card-meta{font-size:10px;margin-bottom:3px;opacity:.8}
 .s-done .card-meta{color:#166534}.s-prog .card-meta{color:#92400E}.s-open .card-meta{color:#991B1B}.s-dec .card-meta{color:#5B21B6}
 .card-tags{display:flex;gap:3px;flex-wrap:wrap}
 .tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px}
@@ -69,31 +90,72 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .prog-bar{height:3px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;margin-top:4px}
 .prog-fill{height:100%;border-radius:2px}
 .s-done .prog-fill{background:#16A34A}.s-prog .prog-fill{background:#D97706}
-.card-edit-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.07);border:none;border-radius:4px;cursor:pointer;font-size:10px;padding:1px 5px;opacity:0;transition:opacity .15s;color:var(--text)}
+.card-edit-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.07);border:none;border-radius:4px;cursor:pointer;font-size:10px;padding:1px 5px;opacity:0;transition:opacity .15s}
 .card:hover .card-edit-btn{opacity:1}
 .empty-col{font-size:11px;color:#CBD5E1;padding:4px 2px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;padding:.65rem 1rem;border-top:0.5px solid var(--border);background:#FAFBFC}
 .leg{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}
 .leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.dec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:9px}
-.dec-card{background:#fff;border:1px solid #DDD6FE;border-left:3px solid var(--purple);border-radius:var(--r);padding:11px 13px}
+
+/* ── Decisions grid ── */
+.dec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:9px}
+.dec-card{background:#fff;border:1px solid #DDD6FE;border-left:3px solid var(--purple);border-radius:var(--r);padding:11px 13px;cursor:pointer;transition:box-shadow .12s,transform .12s;position:relative}
+.dec-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.09);transform:translateY(-1px)}
 .dec-ref{font-size:10px;font-weight:700;color:var(--purple);letter-spacing:.05em;margin-bottom:3px}
 .dec-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.35}
 .dec-meta{font-size:10.5px;color:var(--muted)}
 .dec-badge{display:inline-block;margin-top:5px;font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:10px}
 .dec-badge.open{background:#FEE2E2;color:#7F1D1D}.dec-badge.review{background:#FEF3C7;color:#713F12}.dec-badge.decided{background:#F0FDF4;color:#14532D}
-/* Modal */
+.dec-edit-btn{position:absolute;top:8px;right:10px;background:rgba(0,0,0,.06);border:none;border-radius:4px;cursor:pointer;font-size:10px;padding:2px 6px;opacity:0;transition:opacity .15s}
+.dec-card:hover .dec-edit-btn{opacity:1}
+
+/* ── TIMELINE ── */
+.tl-wrap{background:#fff;border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.25rem}
+.tl-controls{display:flex;gap:8px;align-items:center;padding:.75rem 1rem;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.tl-label{font-size:12px;color:var(--muted)}
+.tl-filter{font-size:12px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);cursor:pointer}
+.tl-filter:focus{outline:none;border-color:var(--blue)}
+.tl-scroll{overflow-x:auto;padding-bottom:4px}
+.tl-inner{min-width:900px}
+.tl-header{display:flex;border-bottom:1px solid var(--border)}
+.tl-row-label{width:220px;flex-shrink:0;font-size:11px;font-weight:600;color:var(--muted);padding:7px 12px;background:#FAFBFC;border-right:0.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.tl-months{flex:1;display:flex}
+.tl-month{flex:1;font-size:10px;font-weight:600;color:var(--muted);padding:7px 4px;text-align:center;border-right:0.5px solid #F1F5F9;letter-spacing:.04em}
+.tl-month.current{color:var(--blue);background:#EFF6FF}
+.tl-body{}
+.tl-row{display:flex;border-bottom:0.5px solid var(--border);min-height:36px;align-items:center}
+.tl-row:last-child{border-bottom:none}
+.tl-row:hover{background:#FAFBFC}
+.tl-row-name{width:220px;flex-shrink:0;font-size:11.5px;font-weight:500;padding:6px 12px;border-right:0.5px solid var(--border);line-height:1.3;color:var(--text)}
+.tl-row-name small{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:1px}
+.tl-track{flex:1;position:relative;height:36px;display:flex;align-items:center}
+.tl-bar{position:absolute;height:18px;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:9px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:filter .12s;max-width:100%}
+.tl-bar:hover{filter:brightness(0.92)}
+.tl-bar.s-done{background:#BBF7D0;color:#14532D;border:1px solid #86EFAC}
+.tl-bar.s-prog{background:#FDE68A;color:#713F12;border:1px solid #FCD34D}
+.tl-bar.s-open{background:#FECACA;color:#7F1D1D;border:1px solid #FCA5A5}
+.tl-bar.s-dec{background:#DDD6FE;color:#4C1D95;border:1px solid #C4B5FD}
+.tl-today{position:absolute;top:0;bottom:0;width:1.5px;background:var(--red);z-index:5;pointer-events:none}
+.tl-today::before{content:'TODAY';position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:var(--red);white-space:nowrap;letter-spacing:.05em}
+.tl-wave-divider{display:flex;align-items:center;border-bottom:0.5px solid var(--border)}
+.tl-wave-lbl{width:220px;flex-shrink:0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-right:0.5px solid var(--border)}
+.tl-wave-lbl.w1{background:#EFF6FF;color:#1D4ED8}.tl-wave-lbl.w2{background:#F0FDF4;color:#15803D}.tl-wave-lbl.w3{background:#FFFBEB;color:#B45309}
+.tl-wave-bar{flex:1;padding:4px 12px;font-size:10px;font-weight:600}
+.tl-wave-bar.w1{background:#EFF6FF;color:#1D4ED8}.tl-wave-bar.w2{background:#F0FDF4;color:#15803D}.tl-wave-bar.w3{background:#FFFBEB;color:#B45309}
+
+/* ── Modals ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem}
 .overlay.hidden{display:none}
 .modal{background:#fff;border-radius:12px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;animation:pop .15s ease}
 @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
 .modal-hd{background:var(--navy);color:#fff;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
 .modal-hd h3{font-size:14px;font-weight:600}
-.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer}
-.modal-body{padding:1.25rem;display:flex;flex-direction:column;gap:12px}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;line-height:1}
+.modal-body{padding:1.25rem;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto}
 .field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
-.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);background:#fff}
-.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;transition:border .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue)}
+.field textarea{resize:vertical;min-height:60px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .modal-ft{padding:.9rem 1.25rem;border-top:0.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 .btn{font-size:12px;font-weight:600;padding:6px 16px;border-radius:6px;border:none;cursor:pointer;transition:all .15s}
@@ -102,22 +164,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .btn-ghost{background:var(--bg);color:var(--muted)}.btn-ghost:hover{background:var(--border)}
 .pct-row{display:flex;align-items:center;gap:8px}
 .pct-row input[type=range]{flex:1;accent-color:var(--blue)}
-.pct-row span{font-size:12px;font-weight:600;color:var(--blue);min-width:32px;text-align:right}
+
 /* Token modal */
 .token-modal{background:#fff;border-radius:12px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:1.5rem;animation:pop .15s ease}
 .token-modal h3{font-size:15px;font-weight:600;margin-bottom:.5rem}
 .token-modal p{font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.5}
 .token-modal input{width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;font-family:monospace;margin-bottom:1rem}
 .token-modal input:focus{outline:none;border-color:var(--blue)}
-.token-modal .note{font-size:11px;color:var(--muted);margin-top:.75rem;line-height:1.5}
+.token-note{font-size:11px;color:var(--muted);margin-top:.75rem;line-height:1.5}
+
 /* Toast */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;transform:translateY(10px);opacity:0;transition:all .25s}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;font-size:12px;font-weight:500;padding:10px 16px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;transform:translateY(10px);opacity:0;transition:all .25s;max-width:320px}
 .toast.show{transform:translateY(0);opacity:1}
+
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.rm-hd,.cl-row{grid-template-columns:130px repeat(3,1fr)}}
-@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.rm-hd,.cl-row{grid-template-columns:100px repeat(3,1fr)}.wrap{padding:.75rem .75rem 3rem}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.rm-hd,.cl-row{grid-template-columns:100px repeat(3,1fr)}.wrap{padding:.75rem .75rem 3rem}.tb-sub{display:none}}
 </style>
 </head>
 <body>
+
 <nav class="topbar">
   <div class="tb-left">
     <span class="tb-logo">PMI</span>
@@ -128,52 +193,107 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <span class="save-st" id="save-st"></span>
     <button class="btn-save" id="btn-save" onclick="initSave()" disabled>↑ Save to GitHub</button>
     <span class="tb-date" id="live-date"></span>
-    <span class="badge">LIVE</span>
+    <span class="badge-live">LIVE</span>
   </div>
 </nav>
 
-<div class="wrap">
-  <div class="kpi-grid" id="kpi-grid"></div>
-  <div class="sec-hd">
-    <span class="sec-title">Integration Roadmap by Wave &amp; Cluster</span>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <div class="filters" id="filters">
-        <span class="fpill on" data-f="all">All <span class="fcnt" id="fc-all"></span></span>
-        <span class="fpill" data-f="done">✓ Done <span class="fcnt" id="fc-done"></span></span>
-        <span class="fpill" data-f="prog">↗ In Progress <span class="fcnt" id="fc-prog"></span></span>
-        <span class="fpill" data-f="open">○ Open <span class="fcnt" id="fc-open"></span></span>
-        <span class="fpill" data-f="dec">⚡ Decision needed <span class="fcnt" id="fc-dec"></span></span>
-      </div>
-      <button class="btn-add" onclick="openModal(null)">+ Add item</button>
-    </div>
-  </div>
-  <div class="rm-wrap">
-    <div class="rm-hd">
-      <div class="rm-hd-cell rm-hd-lbl">Cluster</div>
-      <div class="rm-hd-cell rm-hd-w1">Wave 1 <span class="rh-sub">Apr–Jun 2026 · Quick wins</span></div>
-      <div class="rm-hd-cell rm-hd-w2">Wave 2 <span class="rh-sub">Jul–Sep 2026 · Harmonisation</span></div>
-      <div class="rm-hd-cell rm-hd-w3">Wave 3 <span class="rh-sub">Q4 2026–2027 · Design Services</span></div>
-    </div>
-    <div id="rm-body"></div>
-    <div class="legend">
-      <div class="leg"><span class="leg-dot" style="background:#BBF7D0;border:1px solid #86EFAC"></span>Done</div>
-      <div class="leg"><span class="leg-dot" style="background:#FDE68A;border:1px solid #FCD34D"></span>In Progress</div>
-      <div class="leg"><span class="leg-dot" style="background:#FECACA;border:1px solid #FCA5A5"></span>Open</div>
-      <div class="leg"><span class="leg-dot" style="background:#DDD6FE;border:1px solid #C4B5FD"></span>Decision needed</div>
-      <div class="leg" style="margin-left:auto;font-size:10px;color:#94A3B8">Last saved: <span id="last-saved">–</span></div>
-    </div>
-  </div>
-  <div class="sec-hd">
-    <span class="sec-title">Open Decisions</span>
-    <span style="font-size:12px;color:var(--muted)" id="dec-count"></span>
-  </div>
-  <div class="dec-grid" id="dec-grid"></div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('roadmap',this)">🗂 Roadmap</div>
+  <div class="tab" onclick="switchTab('timeline',this)">📅 Timeline</div>
+  <div class="tab" onclick="switchTab('decisions',this)">⚡ Decisions <span id="dec-tab-count" style="background:rgba(255,255,255,.15);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:2px"></span></div>
 </div>
 
-<!-- Item edit modal -->
-<div class="overlay hidden" id="overlay" onclick="closeOnBg(event)">
+<div class="wrap">
+
+  <!-- KPIs (always visible) -->
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- ── TAB: ROADMAP ── -->
+  <div id="page-roadmap" class="page active">
+    <div class="sec-hd">
+      <span class="sec-title">Integration Roadmap by Wave &amp; Cluster</span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="filters" id="rm-filters">
+          <span class="fpill on" data-f="all">All <span class="fcnt" id="fc-all"></span></span>
+          <span class="fpill" data-f="done">✓ Done <span class="fcnt" id="fc-done"></span></span>
+          <span class="fpill" data-f="prog">↗ In Progress <span class="fcnt" id="fc-prog"></span></span>
+          <span class="fpill" data-f="open">○ Open <span class="fcnt" id="fc-open"></span></span>
+          <span class="fpill" data-f="dec">⚡ Decision needed <span class="fcnt" id="fc-dec"></span></span>
+        </div>
+        <button class="btn-add" onclick="openItemModal(null)">+ Add item</button>
+      </div>
+    </div>
+    <div class="rm-wrap">
+      <div class="rm-hd">
+        <div class="rm-hd-cell rm-hd-lbl">Cluster</div>
+        <div class="rm-hd-cell rm-hd-w1">Wave 1 <span class="rh-sub">Apr–Jun 2026 · Quick wins</span></div>
+        <div class="rm-hd-cell rm-hd-w2">Wave 2 <span class="rh-sub">Jul–Sep 2026 · Harmonisation</span></div>
+        <div class="rm-hd-cell rm-hd-w3">Wave 3 <span class="rh-sub">Q4 2026–2027 · Design Services</span></div>
+      </div>
+      <div id="rm-body"></div>
+      <div class="legend">
+        <div class="leg"><span class="leg-dot" style="background:#BBF7D0;border:1px solid #86EFAC"></span>Done</div>
+        <div class="leg"><span class="leg-dot" style="background:#FDE68A;border:1px solid #FCD34D"></span>In Progress</div>
+        <div class="leg"><span class="leg-dot" style="background:#FECACA;border:1px solid #FCA5A5"></span>Open</div>
+        <div class="leg"><span class="leg-dot" style="background:#DDD6FE;border:1px solid #C4B5FD"></span>Decision needed</div>
+        <div class="leg" style="margin-left:auto;font-size:10px;color:#94A3B8">Last saved: <span id="last-saved">–</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: TIMELINE ── -->
+  <div id="page-timeline" class="page">
+    <div class="sec-hd">
+      <span class="sec-title">Timeline View — All deliverables by target date</span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="tl-label">Filter:</span>
+        <select class="tl-filter" id="tl-owner" onchange="renderTimeline()">
+          <option value="">All owners</option>
+          <option>PMI</option><option>MPs Group</option><option>MPs Digital</option>
+          <option>HR</option><option>FIN</option><option>IT</option>
+          <option>CSC</option><option>Marketing</option><option>Legal</option>
+        </select>
+        <select class="tl-filter" id="tl-wave" onchange="renderTimeline()">
+          <option value="">All waves</option>
+          <option value="1">Wave 1</option><option value="2">Wave 2</option><option value="3">Wave 3</option>
+        </select>
+        <select class="tl-filter" id="tl-status" onchange="renderTimeline()">
+          <option value="">All statuses</option>
+          <option value="done">Done</option><option value="prog">In Progress</option><option value="open">Open</option><option value="dec">Decision needed</option>
+        </select>
+      </div>
+    </div>
+    <div class="tl-wrap">
+      <div class="tl-scroll"><div class="tl-inner" id="tl-inner"></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:-.75rem;margin-bottom:1rem;padding:0 2px">
+      💡 Click any bar to edit the item. Items with "TBD" or year-only dates are shown at the end.
+    </div>
+  </div>
+
+  <!-- ── TAB: DECISIONS ── -->
+  <div id="page-decisions" class="page">
+    <div class="sec-hd">
+      <span class="sec-title">Decision Log</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="filters" id="dec-filters">
+          <span class="fpill on" data-df="all">All</span>
+          <span class="fpill" data-df="open">Open</span>
+          <span class="fpill" data-df="review">In Review</span>
+          <span class="fpill" data-df="decided">Decided</span>
+        </div>
+        <button class="btn-add" onclick="openDecModal(null)">+ Add decision</button>
+      </div>
+    </div>
+    <div class="dec-grid" id="dec-grid"></div>
+  </div>
+
+</div>
+
+<!-- ── Item Modal ── -->
+<div class="overlay hidden" id="item-overlay" onclick="closeOnBg(event,'item-overlay')">
   <div class="modal">
-    <div class="modal-hd"><h3 id="modal-title">Edit item</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-hd"><h3 id="item-modal-title">Edit item</h3><button class="modal-close" onclick="closeItemModal()">✕</button></div>
     <div class="modal-body">
       <div class="field"><label>Title</label><input id="f-title" type="text" placeholder="Milestone / Deliverable"></div>
       <div class="field-row">
@@ -213,9 +333,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       </div>
     </div>
     <div class="modal-ft">
-      <button class="btn btn-danger" id="btn-delete" onclick="deleteItem()">Delete</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" id="item-btn-delete" onclick="deleteItem()">Delete</button>
+      <button class="btn btn-ghost" onclick="closeItemModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Decision Modal ── -->
+<div class="overlay hidden" id="dec-overlay" onclick="closeOnBg(event,'dec-overlay')">
+  <div class="modal">
+    <div class="modal-hd"><h3 id="dec-modal-title">Edit decision</h3><button class="modal-close" onclick="closeDecModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><label>Decision Ref</label><input id="d-ref" type="text" placeholder="e.g. D22"></div>
+        <div class="field"><label>Status</label>
+          <select id="d-status"><option value="open">Open</option><option value="review">In Review</option><option value="decided">Decided</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Title / Topic</label><input id="d-title" type="text" placeholder="Decision topic"></div>
+      <div class="field"><label>Description</label><textarea id="d-desc" placeholder="What needs to be decided?"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Decision Owner</label>
+          <select id="d-owner"><option>PMI</option><option>Jana/Marcel</option><option>Jana/Marcel/Klaus</option><option>MPs Group</option><option>MPs Digital</option><option>COO</option><option>HR</option><option>FIN</option><option>IT</option><option>CSC</option><option>Marketing</option><option>All</option><option>TBD</option></select>
+        </div>
+        <div class="field"><label>Due Date</label><input id="d-date" type="text" placeholder="e.g. Jul 26, Q3 26"></div>
+      </div>
+      <div class="field"><label>Outcome / Decision taken</label><textarea id="d-outcome" placeholder="Fill in once decided…"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-danger" id="dec-btn-delete" onclick="deleteDecision()">Delete</button>
+      <button class="btn btn-ghost" onclick="closeDecModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDecision()">Save</button>
     </div>
   </div>
 </div>
@@ -224,23 +373,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 <div class="overlay hidden" id="token-overlay">
   <div class="token-modal">
     <h3>🔑 GitHub Access Token</h3>
-    <p>Enter your GitHub Personal Access Token to save changes. It stays in your browser only and is never stored in the file.</p>
+    <p>Enter your GitHub Personal Access Token to publish changes. It stays in your browser memory only and is never saved into the file.</p>
     <input type="password" id="token-input" placeholder="ghp_…" autocomplete="off">
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="document.getElementById('token-overlay').classList.add('hidden')">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmToken()">Save to GitHub</button>
+      <button class="btn btn-primary" onclick="confirmToken()">Publish to GitHub</button>
     </div>
-    <p class="note">💡 Token needs <strong>repo</strong> scope. It is only kept in memory for this browser session and never written into the HTML file.</p>
+    <p class="token-note">💡 Needs <strong>repo</strong> scope. Only stored in memory, gone when you close the tab.</p>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const GH_REPO='JanaPanhuyzen/pmi-dashboard';
-const GH_FILE='index.html';
+// ── Config ────────────────────────────────────────────────────────────────
+const GH_REPO='JanaPanhuyzen/pmi-dashboard', GH_FILE='index.html';
 const ICONS={'Governance & PMO':'⚙️','Communication & PR':'📢','People & Talent':'👥','Sales & Revenue':'💶','Delivery & Operations':'🔧','Backoffice: Finance':'📊','Backoffice: HR':'🧑‍💼','Backoffice: IT':'💻','Backoffice: CSC':'📋','Backoffice: Marketing':'📣'};
 
+// ── DATA ─────────────────────────────────────────────────────────────────
 let items=[
   {id:1,cluster:'Governance & PMO',w:1,title:'Integration team & meeting cadence',owner:'PMI',status:'prog',pct:50,dec:true,impact:'H',date:'Jun 26',ref:'D1'},
   {id:2,cluster:'Governance & PMO',w:1,title:'Group Partner Meeting',owner:'PMI',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
@@ -256,15 +406,15 @@ let items=[
   {id:12,cluster:'People & Talent',w:1,title:'Welcome Event (9–10 Jul @HIVE)',owner:'PMI',status:'prog',pct:35,dec:true,impact:'H',date:'Jul 26',ref:'D10'},
   {id:13,cluster:'People & Talent',w:1,title:'Key talent retention packages',owner:'MPs Digital',status:'prog',pct:20,dec:true,impact:'H',date:'Sep 26',ref:'D9'},
   {id:14,cluster:'People & Talent',w:2,title:'Integration ambassadors nominated',owner:'PMI',status:'open',pct:0,dec:true,impact:'M',date:'Jul 26',ref:'D2'},
-  {id:15,cluster:'People & Talent',w:3,title:'Talent mapping & compensation benchmark',owner:'HR',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D12'},
+  {id:15,cluster:'People & Talent',w:3,title:'Talent mapping & compensation',owner:'HR',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D12'},
   {id:16,cluster:'People & Talent',w:3,title:'eNPS baseline measurement',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'2027'},
   {id:17,cluster:'People & Talent',w:3,title:'Recruiting process aligned',owner:'HR',status:'open',pct:0,dec:false,impact:'M',date:'Q3 26'},
   {id:18,cluster:'Sales & Revenue',w:1,title:'Cross-sell pipeline activated',owner:'MPs Digital',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
   {id:19,cluster:'Sales & Revenue',w:1,title:'jupitos in H&Z sales cadence',owner:'MPs Digital',status:'done',pct:100,dec:false,impact:'H',date:'May 26'},
   {id:20,cluster:'Sales & Revenue',w:1,title:'Sales enablement kit',owner:'CSC',status:'open',pct:0,dec:false,impact:'H',date:'Jul 26'},
   {id:21,cluster:'Sales & Revenue',w:1,title:'HubSpot CRM migration',owner:'Marketing',status:'prog',pct:50,dec:false,impact:'H',date:'Jul 26'},
-  {id:22,cluster:'Sales & Revenue',w:1,title:'Standard contracts (NDA, SOW…)',owner:'FIN',status:'open',pct:0,dec:true,impact:'H',date:'TBD',ref:'D5'},
-  {id:23,cluster:'Sales & Revenue',w:3,title:'Pricing model (€1,350/day)',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q3 26',ref:'D8'},
+  {id:22,cluster:'Sales & Revenue',w:1,title:'Standard contracts (NDA, SOW)',owner:'FIN',status:'open',pct:0,dec:true,impact:'H',date:'TBD',ref:'D5'},
+  {id:23,cluster:'Sales & Revenue',w:3,title:'Pricing model (1.350 EUR/day)',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q3 26',ref:'D8'},
   {id:24,cluster:'Sales & Revenue',w:3,title:'Development testing offering',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'M',date:'Q3 26',ref:'D6'},
   {id:25,cluster:'Sales & Revenue',w:3,title:'AMS portfolio scaling',owner:'MPs Digital',status:'open',pct:0,dec:true,impact:'H',date:'Q4 26',ref:'D7'},
   {id:26,cluster:'Delivery & Operations',w:1,title:'Staffing integration model',owner:'MPs Digital',status:'prog',pct:60,dec:false,impact:'H',date:'Jun 26'},
@@ -298,57 +448,75 @@ let items=[
   {id:54,cluster:'Backoffice: Marketing',w:3,title:'Design Marketing Services',owner:'Marketing',status:'open',pct:0,dec:true,impact:'H',date:'2027',ref:'D22'},
 ];
 let decisions=[
-  {ref:'D1',title:'Integration team & meeting cadence',owner:'Jana/Marcel',date:'Jun 26',status:'review'},
-  {ref:'D2',title:'Integration ambassadors',owner:'Jana/Marcel/Klaus',date:'Jul 26',status:'open'},
-  {ref:'D3',title:'Signing authorities',owner:'MP Group',date:'Jul 26',status:'open'},
-  {ref:'D4',title:'KPI & OKR framework',owner:'COO',date:'Q4 26',status:'open'},
-  {ref:'D5',title:'Standard contracts (NDA, SOW…)',owner:'COO',date:'Jul 26',status:'open'},
-  {ref:'D6',title:'Development testing offering',owner:'MPs Digital',date:'Q3 26',status:'open'},
-  {ref:'D7',title:'AMS portfolio scaling',owner:'MPs Digital',date:'Q4 26',status:'open'},
-  {ref:'D8',title:'Pricing model (€1,350/day)',owner:'MPs Digital',date:'Q3 26',status:'open'},
-  {ref:'D9',title:'Key talent retention packages',owner:'MPs Digital',date:'Jul 26',status:'open'},
-  {ref:'D10',title:'Welcome event agenda & budget',owner:'All',date:'Jun 26',status:'review'},
-  {ref:'D11',title:'H&Z Digital org structure',owner:'MPs Digital',date:'Sep 26',status:'open'},
-  {ref:'D12',title:'Talent mapping & compensation',owner:'MPs Digital',date:'Q4 26',status:'open'},
-  {ref:'D13',title:'Nearshoring strategy',owner:'MPs Digital',date:'Q3 26',status:'open'},
-  {ref:'D14',title:'Travel cost management tool',owner:'COO',date:'Q4 26',status:'open'},
-  {ref:'D15',title:'Company credit cards',owner:'COO',date:'2027',status:'open'},
-  {ref:'D16',title:'Design FIN Services',owner:'COO',date:'2027',status:'open'},
-  {ref:'D17',title:'L&D programmes harmonised',owner:'COO',date:'Q3 26',status:'open'},
-  {ref:'D18',title:'Design HR Services',owner:'COO',date:'2027',status:'open'},
-  {ref:'D19',title:'Design IT Services & M365',owner:'COO',date:'2027',status:'open'},
-  {ref:'D20',title:'SharePoint migration',owner:'COO',date:'TBD',status:'open'},
-  {ref:'D21',title:'Design CSC Services',owner:'COO',date:'2027',status:'open'},
-  {ref:'D22',title:'Design Marketing Services',owner:'TBD',date:'2027',status:'open'},
-  {ref:'D23',title:'Office supplies responsibility',owner:'COO',date:'TBD',status:'open'},
-  {ref:'D24',title:'Mobile phone contracts',owner:'COO',date:'TBD',status:'open'},
-  {ref:'D25',title:'Company cars / fleet',owner:'TBD',date:'TBD',status:'open'},
+  {ref:'D1',title:'Integration team & meeting cadence',owner:'Jana/Marcel',date:'Jun 26',status:'review',desc:'',outcome:''},
+  {ref:'D2',title:'Integration ambassadors',owner:'Jana/Marcel/Klaus',date:'Jul 26',status:'open',desc:'Nominate integration ambassadors for H&Z Digital.',outcome:''},
+  {ref:'D3',title:'Signing authorities',owner:'MPs Group',date:'Jul 26',status:'open',desc:'Define who can sign on behalf of the merged entity.',outcome:''},
+  {ref:'D4',title:'KPI & OKR framework',owner:'COO',date:'Q4 26',status:'open',desc:'',outcome:''},
+  {ref:'D5',title:'Standard contracts (NDA, SOW)',owner:'COO',date:'Jul 26',status:'open',desc:'',outcome:''},
+  {ref:'D6',title:'Development testing offering',owner:'MPs Digital',date:'Q3 26',status:'open',desc:'',outcome:''},
+  {ref:'D7',title:'AMS portfolio scaling',owner:'MPs Digital',date:'Q4 26',status:'open',desc:'',outcome:''},
+  {ref:'D8',title:'Pricing model (1.350 EUR/day)',owner:'MPs Digital',date:'Q3 26',status:'open',desc:'',outcome:''},
+  {ref:'D9',title:'Key talent retention packages',owner:'MPs Digital',date:'Jul 26',status:'open',desc:'',outcome:''},
+  {ref:'D10',title:'Welcome event agenda & budget',owner:'All',date:'Jun 26',status:'review',desc:'',outcome:''},
+  {ref:'D11',title:'H&Z Digital org structure',owner:'MPs Digital',date:'Sep 26',status:'open',desc:'',outcome:''},
+  {ref:'D12',title:'Talent mapping & compensation',owner:'MPs Digital',date:'Q4 26',status:'open',desc:'',outcome:''},
+  {ref:'D13',title:'Nearshoring strategy',owner:'MPs Digital',date:'Q3 26',status:'open',desc:'',outcome:''},
+  {ref:'D14',title:'Travel cost management tool',owner:'COO',date:'Q4 26',status:'open',desc:'',outcome:''},
+  {ref:'D15',title:'Company credit cards',owner:'COO',date:'2027',status:'open',desc:'',outcome:''},
+  {ref:'D16',title:'Design FIN Services',owner:'COO',date:'2027',status:'open',desc:'',outcome:''},
+  {ref:'D17',title:'L&D programmes harmonised',owner:'COO',date:'Q3 26',status:'open',desc:'',outcome:''},
+  {ref:'D18',title:'Design HR Services',owner:'COO',date:'2027',status:'open',desc:'',outcome:''},
+  {ref:'D19',title:'Design IT Services & M365',owner:'COO',date:'2027',status:'open',desc:'',outcome:''},
+  {ref:'D20',title:'SharePoint migration',owner:'COO',date:'TBD',status:'open',desc:'',outcome:''},
+  {ref:'D21',title:'Design CSC Services',owner:'COO',date:'2027',status:'open',desc:'',outcome:''},
+  {ref:'D22',title:'Design Marketing Services',owner:'TBD',date:'2027',status:'open',desc:'Which marketing channels, tools and budget are shared vs local?',outcome:''},
+  {ref:'D23',title:'Office supplies responsibility',owner:'COO',date:'TBD',status:'open',desc:'',outcome:''},
+  {ref:'D24',title:'Mobile phone contracts',owner:'COO',date:'TBD',status:'open',desc:'',outcome:''},
+  {ref:'D25',title:'Company cars / fleet',owner:'TBD',date:'TBD',status:'open',desc:'',outcome:''},
 ];
+let nextId=100,rmFilter='all',decFilter='all',editingItemId=null,editingDecRef=null,dirty=false,ghToken=null;
 
-let nextId=100,activeFilter='all',editingId=null,dirty=false,ghToken=null;
+// ── Tab switching ─────────────────────────────────────────────────────────
+function switchTab(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='timeline') renderTimeline();
+  if(name==='decisions') renderDecisions();
+}
 
+// ── Helpers ───────────────────────────────────────────────────────────────
 function cc(it){return it.dec?'s-dec':it.status==='done'?'s-done':it.status==='prog'?'s-prog':'s-open';}
 function dot(it){return it.status==='done'?'✓':it.status==='prog'?'↗':'○';}
 function imp(i){return i==='H'?'High':i==='M'?'Medium':'Low';}
 function mf(it){
-  if(activeFilter==='all')return true;
-  if(activeFilter==='done')return it.status==='done';
-  if(activeFilter==='prog')return it.status==='prog';
-  if(activeFilter==='open')return it.status==='open'&&!it.dec;
-  if(activeFilter==='dec')return it.dec;
-  return true;
+  if(rmFilter==='all')return true;
+  if(rmFilter==='done')return it.status==='done';
+  if(rmFilter==='prog')return it.status==='prog';
+  if(rmFilter==='open')return it.status==='open'&&!it.dec;
+  if(rmFilter==='dec')return it.dec;
 }
+function df(d){
+  if(decFilter==='all')return true;
+  return d.status===decFilter;
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────
 function renderKPIs(){
   const t=items.length,d=items.filter(i=>i.status==='done').length;
   const w1=items.filter(i=>i.w==1),w2=items.filter(i=>i.w==2),w3=items.filter(i=>i.w==3);
-  const w1d=w1.filter(i=>i.status==='done').length,w2d=w2.filter(i=>i.status==='done').length,w3d=w3.filter(i=>i.status==='done').length;
+  const p=(a,b)=>Math.round(a/b*100)||0;
   document.getElementById('kpi-grid').innerHTML=`
-    <div class="kpi total"><div class="kpi-lbl">Total</div><div class="kpi-val">${t}</div><div class="kpi-sub">${d} done · ${Math.round(d/t*100)}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(d/t*100)}%;background:var(--navy)"></div></div></div>
-    <div class="kpi w1"><div class="kpi-lbl">Wave 1</div><div class="kpi-val">${w1.length}</div><div class="kpi-sub">${w1d} done · ${Math.round(w1d/w1.length*100)||0}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w1d/w1.length*100)||0}%;background:var(--blue)"></div></div></div>
-    <div class="kpi w2"><div class="kpi-lbl">Wave 2</div><div class="kpi-val">${w2.length}</div><div class="kpi-sub">${w2d} done · ${Math.round(w2d/w2.length*100)||0}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w2d/w2.length*100)||0}%;background:var(--green)"></div></div></div>
-    <div class="kpi w3"><div class="kpi-lbl">Wave 3</div><div class="kpi-val">${w3.length}</div><div class="kpi-sub">${w3d} done · design phase</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(w3d/w3.length*100)||0}%;background:var(--amber)"></div></div></div>
-    <div class="kpi dec"><div class="kpi-lbl">Decisions open</div><div class="kpi-val">${items.filter(i=>i.dec).length}</div><div class="kpi-sub">action required</div><div class="kpi-bar"><div class="kpi-fill" style="width:100%;background:var(--purple)"></div></div></div>`;
+    <div class="kpi total"><div class="kpi-lbl">Total</div><div class="kpi-val">${t}</div><div class="kpi-sub">${d} done · ${p(d,t)}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${p(d,t)}%;background:var(--navy)"></div></div></div>
+    <div class="kpi w1"><div class="kpi-lbl">Wave 1</div><div class="kpi-val">${w1.length}</div><div class="kpi-sub">${w1.filter(i=>i.status==='done').length} done · ${p(w1.filter(i=>i.status==='done').length,w1.length)}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${p(w1.filter(i=>i.status==='done').length,w1.length)}%;background:var(--blue)"></div></div></div>
+    <div class="kpi w2"><div class="kpi-lbl">Wave 2</div><div class="kpi-val">${w2.length}</div><div class="kpi-sub">${w2.filter(i=>i.status==='done').length} done · ${p(w2.filter(i=>i.status==='done').length,w2.length)}%</div><div class="kpi-bar"><div class="kpi-fill" style="width:${p(w2.filter(i=>i.status==='done').length,w2.length)}%;background:var(--green)"></div></div></div>
+    <div class="kpi w3"><div class="kpi-lbl">Wave 3</div><div class="kpi-val">${w3.length}</div><div class="kpi-sub">Design phase · Q4 2026+</div><div class="kpi-bar"><div class="kpi-fill" style="width:2%;background:var(--amber)"></div></div></div>
+    <div class="kpi dec"><div class="kpi-lbl">Decisions open</div><div class="kpi-val">${decisions.filter(d=>d.status!=='decided').length}</div><div class="kpi-sub">action required</div><div class="kpi-bar"><div class="kpi-fill" style="width:100%;background:var(--purple)"></div></div></div>`;
+  document.getElementById('dec-tab-count').textContent=decisions.filter(d=>d.status!=='decided').length;
 }
+
+// ── Roadmap ───────────────────────────────────────────────────────────────
 function renderCounts(){
   document.getElementById('fc-all').textContent=items.length;
   document.getElementById('fc-done').textContent=items.filter(i=>i.status==='done').length;
@@ -366,8 +534,8 @@ function renderRoadmap(){
     const w3=items.filter(i=>i.cluster===cl&&i.w===3&&mf(i));
     if(!w1.length&&!w2.length&&!w3.length)return;
     const mk=arr=>arr.length?arr.map(it=>`
-      <div class="card ${cc(it)}" onclick="openModal(${it.id})">
-        <button class="card-edit-btn" onclick="openModal(${it.id});event.stopPropagation()">✏︎</button>
+      <div class="card ${cc(it)}" onclick="openItemModal(${it.id})">
+        <button class="card-edit-btn" onclick="openItemModal(${it.id});event.stopPropagation()">✏︎</button>
         <div class="card-top"><span class="card-dot">${dot(it)}</span><span class="card-title">${it.title}</span></div>
         <div class="card-meta">${it.owner} · ${it.date}</div>
         <div class="card-tags"><span class="tag tag-${it.impact}">${imp(it.impact)}</span>${it.dec?`<span class="tag tag-D">⚡ ${it.ref||'Decision'}</span>`:''}</div>
@@ -378,28 +546,128 @@ function renderRoadmap(){
     body.appendChild(row);
   });
 }
-function renderDecisions(){
-  const open=decisions.filter(d=>d.status!=='decided');
-  document.getElementById('dec-count').textContent=`${open.length} decisions · action required`;
-  document.getElementById('dec-grid').innerHTML=open.map(d=>`
-    <div class="dec-card"><div class="dec-ref">${d.ref}</div><div class="dec-title">${d.title}</div>
-    <div class="dec-meta">Owner: ${d.owner} · Due: ${d.date}</div>
-    <span class="dec-badge ${d.status}">${d.status==='review'?'In Review':d.status==='decided'?'Decided':'Open'}</span></div>`).join('');
-}
-function renderAll(){renderKPIs();renderCounts();renderRoadmap();renderDecisions();}
-
-document.getElementById('filters').addEventListener('click',e=>{
+document.getElementById('rm-filters').addEventListener('click',e=>{
   const p=e.target.closest('.fpill');if(!p)return;
-  activeFilter=p.dataset.f;
-  document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('on'));p.classList.add('on');
+  rmFilter=p.dataset.f;
+  document.querySelectorAll('#rm-filters .fpill').forEach(x=>x.classList.remove('on'));p.classList.add('on');
   renderRoadmap();
 });
 
-function openModal(id){
-  editingId=id;
+// ── Timeline ──────────────────────────────────────────────────────────────
+// Month slots Apr 2026 – Dec 2027
+const TL_MONTHS=[
+  {label:'Apr 26',y:2026,m:4},{label:'May 26',y:2026,m:5},{label:'Jun 26',y:2026,m:6},
+  {label:'Jul 26',y:2026,m:7},{label:'Aug 26',y:2026,m:8},{label:'Sep 26',y:2026,m:9},
+  {label:'Oct 26',y:2026,m:10},{label:'Nov 26',y:2026,m:11},{label:'Dec 26',y:2026,m:12},
+  {label:'Q1 27',y:2027,m:3},{label:'Q2 27',y:2027,m:6},{label:'Q3 27',y:2027,m:9},{label:'Q4 27',y:2027,m:12},
+  {label:'TBD',y:2028,m:1},
+];
+const NOW={y:2026,m:6};
+
+function dateToSlot(dateStr){
+  if(!dateStr||dateStr==='TBD') return TL_MONTHS.length-1;
+  const s=dateStr.trim();
+  // Month abbrev
+  const mmap={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+  for(const [abbr,mn] of Object.entries(mmap)){
+    if(s.startsWith(abbr)){
+      const yr=2000+parseInt(s.slice(-2));
+      return TL_MONTHS.findIndex(m=>m.y===yr&&m.m===mn);
+    }
+  }
+  if(s.startsWith('Q')){const q=parseInt(s[1]),yr=2000+parseInt(s.slice(-2));const mo=q*3;return TL_MONTHS.findIndex(m=>m.y===yr&&m.m===mo);}
+  if(s==='2027') return TL_MONTHS.findIndex(m=>m.y===2027&&m.m===3);
+  if(s==='2026') return TL_MONTHS.findIndex(m=>m.y===2026&&m.m===12);
+  return TL_MONTHS.length-1;
+}
+function nowSlot(){return TL_MONTHS.findIndex(m=>m.y===NOW.y&&m.m===NOW.m);}
+
+function renderTimeline(){
+  const ownerF=document.getElementById('tl-owner').value;
+  const waveF=document.getElementById('tl-wave').value;
+  const statusF=document.getElementById('tl-status').value;
+  let filtered=items.filter(it=>{
+    if(ownerF&&it.owner!==ownerF)return false;
+    if(waveF&&it.w!=waveF)return false;
+    if(statusF){
+      if(statusF==='dec')return it.dec;
+      if(statusF==='open')return it.status==='open'&&!it.dec;
+      return it.status===statusF;
+    }
+    return true;
+  });
+  // Sort by slot
+  filtered=filtered.slice().sort((a,b)=>dateToSlot(a.date)-dateToSlot(b.date));
+  const nSlots=TL_MONTHS.length;
+  const todayIdx=nowSlot();
+  const pct=i=>(i/nSlots*100).toFixed(2)+'%';
+  const w=i=>(1/nSlots*100).toFixed(2)+'%';
+
+  let html=`<div class="tl-header">
+    <div class="tl-row-label">Deliverable</div>
+    <div class="tl-months">
+      ${TL_MONTHS.map((m,i)=>`<div class="tl-month${i===todayIdx?' current':''}">${m.label}</div>`).join('')}
+    </div>
+  </div><div class="tl-body" style="position:relative">`;
+
+  // Wave dividers
+  const waves=[1,2,3];
+  waves.forEach(wv=>{
+    const wItems=filtered.filter(i=>i.w===wv);
+    if(!wItems.length)return;
+    const wColors={1:{bg:'#EFF6FF',cl:'#1D4ED8'},2:{bg:'#F0FDF4',cl:'#15803D'},3:{bg:'#FFFBEB',cl:'#B45309'}};
+    const c=wColors[wv];
+    html+=`<div class="tl-wave-divider">
+      <div class="tl-wave-lbl w${wv}" style="background:${c.bg};color:${c.cl}">Wave ${wv}</div>
+      <div class="tl-wave-bar w${wv}" style="background:${c.bg};color:${c.cl}">${wv===1?'Apr–Jun 2026':wv===2?'Jul–Sep 2026':'Q4 2026 – 2027'}</div>
+    </div>`;
+    wItems.forEach(it=>{
+      const slot=dateToSlot(it.date);
+      const left=pct(slot);
+      const barW=w(1);
+      const cls=cc(it);
+      html+=`<div class="tl-row">
+        <div class="tl-row-name">${it.title}<small>${it.owner}</small></div>
+        <div class="tl-track">
+          ${todayIdx>=0?`<div class="tl-today" style="left:${pct(todayIdx)}"></div>`:''}
+          <div class="tl-bar ${cls}" style="left:${left};width:${barW};min-width:${barW}" onclick="openItemModal(${it.id})" title="${it.title} — ${it.date}">
+            ${it.date}
+          </div>
+        </div>
+      </div>`;
+    });
+  });
+  html+='</div>';
+  document.getElementById('tl-inner').innerHTML=html;
+}
+
+// ── Decisions ─────────────────────────────────────────────────────────────
+function renderDecisions(){
+  const open=decisions.filter(d=>df(d));
+  document.getElementById('dec-grid').innerHTML=open.map(d=>`
+    <div class="dec-card" onclick="openDecModal('${d.ref}')">
+      <button class="dec-edit-btn" onclick="openDecModal('${d.ref}');event.stopPropagation()">✏︎</button>
+      <div class="dec-ref">${d.ref}</div>
+      <div class="dec-title">${d.title}</div>
+      <div class="dec-meta">Owner: ${d.owner} · Due: ${d.date}</div>
+      ${d.desc?`<div class="dec-meta" style="margin-top:4px;font-style:italic;opacity:.8">${d.desc}</div>`:''}
+      <span class="dec-badge ${d.status}">${d.status==='review'?'In Review':d.status==='decided'?'Decided':'Open'}</span>
+      ${d.outcome?`<div class="dec-meta" style="margin-top:5px;color:#14532D;font-style:italic">→ ${d.outcome}</div>`:''}
+    </div>`).join('');
+}
+document.getElementById('dec-filters').addEventListener('click',e=>{
+  const p=e.target.closest('.fpill');if(!p)return;
+  decFilter=p.dataset.df;
+  document.querySelectorAll('#dec-filters .fpill').forEach(x=>x.classList.remove('on'));p.classList.add('on');
+  renderDecisions();
+});
+
+// ── Item Modal ────────────────────────────────────────────────────────────
+function openItemModal(id){
+  editingItemId=id;
   const it=id!=null?items.find(i=>i.id===id):null;
-  document.getElementById('modal-title').textContent=it?'Edit item':'Add item';
-  document.getElementById('btn-delete').style.display=it?'':'none';
+  document.getElementById('item-modal-title').textContent=it?'Edit item':'Add item';
+  document.getElementById('item-btn-delete').style.display=it?'':'none';
   document.getElementById('f-title').value=it?.title||'';
   document.getElementById('f-cluster').value=it?.cluster||'Governance & PMO';
   document.getElementById('f-wave').value=it?.w||1;
@@ -411,66 +679,80 @@ function openModal(id){
   document.getElementById('pct-lbl').textContent=(it?.pct||0)+'%';
   document.getElementById('f-dec').value=it?.dec?'true':'false';
   document.getElementById('f-ref').value=it?.ref||'';
-  document.getElementById('overlay').classList.remove('hidden');
+  document.getElementById('item-overlay').classList.remove('hidden');
 }
-function closeModal(){document.getElementById('overlay').classList.add('hidden');editingId=null;}
-function closeOnBg(e){if(e.target===document.getElementById('overlay'))closeModal();}
+function closeItemModal(){document.getElementById('item-overlay').classList.add('hidden');editingItemId=null;}
 function saveItem(){
   const title=document.getElementById('f-title').value.trim();
   if(!title){alert('Please enter a title.');return;}
-  const obj={id:editingId!=null?editingId:nextId++,cluster:document.getElementById('f-cluster').value,w:parseInt(document.getElementById('f-wave').value),title,owner:document.getElementById('f-owner').value,status:document.getElementById('f-status').value,pct:parseInt(document.getElementById('f-pct').value),dec:document.getElementById('f-dec').value==='true',impact:document.getElementById('f-impact').value,date:document.getElementById('f-date').value||'TBD',ref:document.getElementById('f-ref').value||undefined};
-  if(editingId!=null){const idx=items.findIndex(i=>i.id===editingId);if(idx>-1)items[idx]=obj;}else items.push(obj);
-  closeModal();markDirty();renderAll();
+  const obj={id:editingItemId!=null?editingItemId:nextId++,cluster:document.getElementById('f-cluster').value,w:parseInt(document.getElementById('f-wave').value),title,owner:document.getElementById('f-owner').value,status:document.getElementById('f-status').value,pct:parseInt(document.getElementById('f-pct').value),dec:document.getElementById('f-dec').value==='true',impact:document.getElementById('f-impact').value,date:document.getElementById('f-date').value||'TBD',ref:document.getElementById('f-ref').value||undefined};
+  if(editingItemId!=null){const idx=items.findIndex(i=>i.id===editingItemId);if(idx>-1)items[idx]=obj;}else items.push(obj);
+  closeItemModal();markDirty();renderAll();
 }
-function deleteItem(){if(!confirm('Delete this item?'))return;items=items.filter(i=>i.id!==editingId);closeModal();markDirty();renderAll();}
+function deleteItem(){if(!confirm('Delete this item?'))return;items=items.filter(i=>i.id!==editingItemId);closeItemModal();markDirty();renderAll();}
+
+// ── Decision Modal ────────────────────────────────────────────────────────
+function openDecModal(ref){
+  editingDecRef=ref;
+  const d=ref?decisions.find(x=>x.ref===ref):null;
+  document.getElementById('dec-modal-title').textContent=d?'Edit decision':'Add decision';
+  document.getElementById('dec-btn-delete').style.display=d?'':'none';
+  document.getElementById('d-ref').value=d?.ref||'';
+  document.getElementById('d-title').value=d?.title||'';
+  document.getElementById('d-desc').value=d?.desc||'';
+  document.getElementById('d-owner').value=d?.owner||'TBD';
+  document.getElementById('d-date').value=d?.date||'';
+  document.getElementById('d-status').value=d?.status||'open';
+  document.getElementById('d-outcome').value=d?.outcome||'';
+  document.getElementById('dec-overlay').classList.remove('hidden');
+}
+function closeDecModal(){document.getElementById('dec-overlay').classList.add('hidden');editingDecRef=null;}
+function saveDecision(){
+  const title=document.getElementById('d-title').value.trim();
+  if(!title){alert('Please enter a title.');return;}
+  const obj={ref:document.getElementById('d-ref').value||'D?',title,desc:document.getElementById('d-desc').value,owner:document.getElementById('d-owner').value,date:document.getElementById('d-date').value||'TBD',status:document.getElementById('d-status').value,outcome:document.getElementById('d-outcome').value};
+  if(editingDecRef){const idx=decisions.findIndex(x=>x.ref===editingDecRef);if(idx>-1)decisions[idx]=obj;}else decisions.push(obj);
+  closeDecModal();markDirty();renderAll();
+}
+function deleteDecision(){if(!confirm('Delete this decision?'))return;decisions=decisions.filter(x=>x.ref!==editingDecRef);closeDecModal();markDirty();renderAll();}
+
+function closeOnBg(e,id){if(e.target===document.getElementById(id)){if(id==='item-overlay')closeItemModal();else closeDecModal();}}
+
+// ── Dirty / Save ──────────────────────────────────────────────────────────
 function markDirty(){dirty=true;document.getElementById('btn-save').disabled=false;document.getElementById('save-st').textContent='Unsaved changes';}
 function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
-
-function initSave(){
-  if(ghToken){pushToGithub();}
-  else{document.getElementById('token-input').value='';document.getElementById('token-overlay').classList.remove('hidden');}
-}
-function confirmToken(){
-  const t=document.getElementById('token-input').value.trim();
-  if(!t){alert('Please enter a token.');return;}
-  ghToken=t;
-  document.getElementById('token-overlay').classList.add('hidden');
-  pushToGithub();
-}
+function initSave(){if(ghToken)pushToGithub();else{document.getElementById('token-input').value='';document.getElementById('token-overlay').classList.remove('hidden');}}
+function confirmToken(){const t=document.getElementById('token-input').value.trim();if(!t)return;ghToken=t;document.getElementById('token-overlay').classList.add('hidden');pushToGithub();}
 
 async function pushToGithub(){
   const btn=document.getElementById('btn-save');
   btn.disabled=true;btn.textContent='Saving…';
   document.getElementById('save-st').textContent='Pushing to GitHub…';
   try{
-    // Inject current data into the page's own script, then upload the whole page
     const html=buildHtml();
     const encoded=btoa(unescape(encodeURIComponent(html)));
     const meta=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json'}});
     const mj=await meta.json();
-    const res=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{method:'PUT',headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Dashboard update',content:encoded,sha:mj.sha})});
+    const res=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{method:'PUT',headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Dashboard update via editor',content:encoded,sha:mj.sha})});
     if(res.ok){
       dirty=false;
       const now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
       document.getElementById('last-saved').textContent=now;
       document.getElementById('save-st').textContent='Saved ✓';
       btn.textContent='↑ Save to GitHub';btn.disabled=false;
-      showToast('✓ Saved — GitHub Pages updates in ~30 seconds');
+      showToast('✓ Published — live in ~30 seconds at janapanhuyzen.github.io/pmi-dashboard');
     }else{const e=await res.json();throw new Error(e.message);}
-  }catch(e){document.getElementById('save-st').textContent='Failed';btn.textContent='↑ Save to GitHub';btn.disabled=false;showToast('⚠ '+e.message,5000);console.error(e);}
+  }catch(e){document.getElementById('save-st').textContent='Failed';btn.textContent='↑ Save to GitHub';btn.disabled=false;showToast('⚠ '+e.message,5000);}
 }
-
 function buildHtml(){
-  // Clone current HTML and inject updated data arrays before upload
   const s=document.documentElement.outerHTML;
-  const itemsJson=JSON.stringify(items);
-  const decsJson=JSON.stringify(decisions);
-  // Replace the data arrays in the script
   return s
-    .replace(/let items=\[[\s\S]*?\];(?=\s*let decisions)/, 'let items='+itemsJson+';')
-    .replace(/let decisions=\[[\s\S]*?\];(?=\s*\n\s*let nextId)/, 'let decisions='+decsJson+';');
+    .replace(/let items=\[[\s\S]*?\];(?=\s*let decisions)/,'let items='+JSON.stringify(items)+';')
+    .replace(/let decisions=\[[\s\S]*?\];(?=\s*let nextId)/,'let decisions='+JSON.stringify(decisions)+';');
 }
 
+// ── Render all ────────────────────────────────────────────────────────────
+function renderAll(){renderKPIs();renderCounts();renderRoadmap();}
 document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
 renderAll();
 </script>
